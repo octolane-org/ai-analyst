@@ -2,21 +2,21 @@ version: "3.7"
 name: octolane-csv-enrich-app
 
 services:
-  app:
-    image: octolane-csv-enrich-app
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    container_name: app
-    env_file:
-      - ./.env
-    ports:
-      - 3000:3000
-    volumes:
-      - ./:/usr/src/app
-      - ./node_modules:/usr/src/app/node_modules
-    working_dir: /usr/src/app
-    command: sh -c "npm install && npm run dev"
+  # app:
+  #   image: octolane-csv-enrich-app
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile
+  #   container_name: app
+  #   env_file:
+  #     - ./.env
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./:/usr/src/app
+  #     - ./node_modules:/usr/src/app/node_modules
+  #   working_dir: /usr/src/app
+  #   command: sh -c "npm install && npm run dev"
 
   db:
     image: postgres:16-alpine
