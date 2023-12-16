@@ -11,8 +11,6 @@ export const configuration = {
     siteName: "Octolane AI",
     twitterHandle: "octolane_app",
     githubHandle: "octolane-org",
-    convertKitFormId: "",
-    locale: process.env.NEXT_PUBLIC_DEFAULT_LOCALE,
   },
   isProduction,
   environment: process.env.NEXT_PUBLIC_ENVIRONMENT,
