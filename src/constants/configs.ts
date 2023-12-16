@@ -21,4 +21,10 @@ export const configuration = {
     apiKey: process.env.NEXT_PUBLIC_POSTHOG_API_KEY,
     apiHost: process.env.NEXT_PUBLIC_POSTHOG_API_HOST,
   },
+  auth: {
+    google: {
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
 };

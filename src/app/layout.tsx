@@ -1,10 +1,37 @@
 import { configuration } from "@/constants/configs";
-import type { Metadata } from "next";
+import { NextAuthProvider } from "@/lib/next-auth";
+import { cn } from "@/utils/common";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 
 import "./globals.css";
+import { PHProvider, PostHogPageview } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <Suspense>
+        <PostHogPageview />
+      </Suspense>
+      <PHProvider>
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            inter.className,
+          )}
+        >
+          <NextAuthProvider>{children}</NextAuthProvider>
+        </body>
+      </PHProvider>
+    </html>
+  );
+}
 
 export const metadata = {
   title: configuration.site.name,
@@ -31,15 +58,3 @@ export const metadata = {
     },
   },
 };
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
-}
