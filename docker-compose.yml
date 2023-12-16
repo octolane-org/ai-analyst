@@ -7,9 +7,9 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    container_name: csv-enrich-app
+    container_name: app
     env_file:
-      - ./.env.local
+      - ./.env
     ports:
       - 3000:3000
     volumes:
@@ -20,7 +20,7 @@ services:
 
   db:
     image: postgres:16-alpine
-    container_name: postgres-csv-enrich
+    container_name: postgres
     mem_limit: 1g
     ports:
       - 3100:5432
@@ -30,11 +30,3 @@ services:
       POSTGRES_USER: root
     volumes:
       - /var/lib/postgresql/octolane-csv-enrich/data:/var/lib/postgresql/data
-
-  db-adminer:
-    image: adminer
-    container_name: adminer-csv-enrich
-    links:
-      - db:db
-    ports:
-      - 3200:8080

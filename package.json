@@ -11,6 +11,7 @@
     "prepare": "npx husky install && chmod +x .husky/pre-push && chmod +x .husky/pre-commit"
   },
   "dependencies": {
+    "@prisma/client": "5.7.0",
     "next": "14.0.4",
     "posthog-js": "1.96.1",
     "react": "^18",
