@@ -22,6 +22,7 @@ export const configuration = {
     apiHost: process.env.NEXT_PUBLIC_POSTHOG_API_HOST,
   },
   auth: {
+    secret: process.env.NEXTAUTH_SECRET as string,
     google: {
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,

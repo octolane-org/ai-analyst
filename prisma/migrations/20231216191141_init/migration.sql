@@ -1,6 +1,3 @@
--- AlterTable
-ALTER TABLE "users" ADD COLUMN     "image" TEXT;
-
 -- CreateTable
 CREATE TABLE "account" (
     "id" TEXT NOT NULL,
@@ -32,6 +29,17 @@ CREATE TABLE "session" (
 );
 
 -- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "name" TEXT,
+    "email" TEXT,
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "verification_token" (
     "id" SERIAL NOT NULL,
     "identifier" TEXT NOT NULL,
@@ -48,13 +56,16 @@ CREATE UNIQUE INDEX "account_provider_provider_account_id_key" ON "account"("pro
 CREATE UNIQUE INDEX "session_session_token_key" ON "session"("session_token");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "verification_token_token_key" ON "verification_token"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "verification_token_identifier_token_key" ON "verification_token"("identifier", "token");
 
 -- AddForeignKey
-ALTER TABLE "account" ADD CONSTRAINT "account_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "session" ADD CONSTRAINT "session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
