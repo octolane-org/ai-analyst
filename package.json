@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "prepare": "husky install && chmod +x .husky/pre-push && chmod +x .husky/pre-commit"
+    "prepare": "npx husky install && chmod +x .husky/pre-push && chmod +x .husky/pre-commit"
   },
   "dependencies": {
     "next": "14.0.4",
@@ -28,6 +28,7 @@
     "postcss": "^8",
     "prettier": "3.1.1",
     "prettier-plugin-tailwindcss": "0.5.9",
+    "prisma": "5.7.0",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
