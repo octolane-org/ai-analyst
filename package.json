@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
+    "migration:create": "prisma migrate dev --create-only",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
     "prepare": "npx husky install && chmod +x .husky/pre-push && chmod +x .husky/pre-commit"
   },
   "dependencies": {
