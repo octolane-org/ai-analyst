@@ -1,9 +1,14 @@
 "use client";
 
 import Container from "@/components/Container";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
+import { Button } from "./ui/button";
+
 const SiteHeader = () => {
+  const session = useSession();
+
   return (
     <div className="sticky top-0 z-20">
       <Container>
@@ -23,6 +28,16 @@ const SiteHeader = () => {
           <div className={"flex flex-1 items-center justify-end space-x-4 "}>
             Talk to founders
           </div>
+
+          {session.status === "authenticated" ? (
+            <Button
+              className="ml-5"
+              variant="outline"
+              onClick={() => signOut()}
+            >
+              Logout
+            </Button>
+          ) : null}
         </div>
       </Container>
     </div>

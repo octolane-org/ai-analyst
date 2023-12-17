@@ -34,9 +34,7 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
 
   const isEnriching = useMemo(() => {
     const isEnriching = processingEmails.length > 0;
-
     setShowDownloadButton(!isEnriching);
-
     return isEnriching;
   }, [processingEmails.length, setShowDownloadButton]);
 
@@ -68,6 +66,7 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
               "X-CSRF-Token": csrfToken,
               "x-fingerprint": fp,
             },
+            timeout: 10000,
           },
         );
         updateEnrichedList(data, true);

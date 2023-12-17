@@ -22,16 +22,18 @@ export default function RootLayout({
         <PostHogPageview />
       </Suspense>
       <PHProvider>
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            inter.className,
-          )}
-        >
-          <SiteHeader />
-          <Toaster />
-          <NextAuthProvider>{children}</NextAuthProvider>
-        </body>
+        <NextAuthProvider>
+          <body
+            className={cn(
+              "min-h-screen bg-background font-sans antialiased",
+              inter.className,
+            )}
+          >
+            <Toaster />
+            <SiteHeader />
+            {children}
+          </body>
+        </NextAuthProvider>
       </PHProvider>
     </html>
   );
