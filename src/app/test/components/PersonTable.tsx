@@ -1,7 +1,7 @@
+import { TypingEffect } from "@/components/TypingEffect";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -41,8 +41,12 @@ export const PersonTable = ({ rowData }: PersonTableProps) => {
     return new Promise<PersonCSVData>(resolve => {
       setTimeout(
         () => {
-          setEnrichedData(prev =>
-            prev.map((row, index) => {
+          setEnrichedData(prev => {
+            setProcessingEmails(prev =>
+              prev.filter(email => email !== data.email),
+            );
+
+            return prev.map((row, index) => {
               if (row.email === data.email) {
                 return {
                   email: data.email,
@@ -59,11 +63,8 @@ export const PersonTable = ({ rowData }: PersonTableProps) => {
                 };
               }
               return row;
-            }),
-          );
-          setProcessingEmails(prev =>
-            prev.filter(email => email !== data.email),
-          );
+            });
+          });
           resolve(data);
         },
         Math.random() * 5000 + 1000,
@@ -72,8 +73,7 @@ export const PersonTable = ({ rowData }: PersonTableProps) => {
   };
 
   return (
-    <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
+    <Table className="text-justify mt-8">
       <TableHeader>
         <TableRow>
           <TableHead className="w-[100px]">#</TableHead>
@@ -123,32 +123,15 @@ const PersonEnrichedCell = ({
   data?: string;
   isProcessing: boolean;
 }) => {
-  const [displayedValue, setDisplayedValue] = useState("");
-
-  useEffect(() => {
-    let i = 0;
-    const typingEffect = setInterval(() => {
-      if (!data) return;
-
-      if (i < data.length) {
-        setDisplayedValue(prevName => prevName + data[i]);
-        i++;
-      } else {
-        clearInterval(typingEffect);
-      }
-    }, 100);
-
-    return () => clearInterval(typingEffect);
-  }, [data]);
-
   return (
     <TableCell>
       <div
         className={cn("px-1", {
           "animate-pulse bg-zinc-200 rounded-md": isProcessing,
+          "bg-zinc-200": !data,
         })}
       >
-        {data}
+        {data && <TypingEffect text={data} />}
       </div>
     </TableCell>
   );
