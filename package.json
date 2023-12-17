@@ -24,6 +24,7 @@
     "axios": "1.6.2",
     "class-variance-authority": "0.7.0",
     "clsx": "2.0.0",
+    "edge-csrf": "1.0.7",
     "katex": "^0.16.9",
     "next": "14.0.4",
     "next-auth": "4.24.5",

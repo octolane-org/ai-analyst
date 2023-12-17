@@ -14,6 +14,7 @@ export const configuration = {
   },
   isProduction,
   environment: process.env.NEXT_PUBLIC_ENVIRONMENT,
+  octolaneAPIKey: process.env.OCTOLANE_API_KEY,
   sentry: {
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },

@@ -1,43 +1,10 @@
-"use client";
-
-import { ActionCard } from "@/components/ActionCard";
 import Container from "@/components/Container";
-import type { PersonCSVData } from "@/types/PersonEnrich.type";
-import { convertCSVToJson } from "@/utils/csvToJson";
-import type { ChangeEventHandler } from "react";
-import { useState } from "react";
+import { headers } from "next/headers";
 
-import { PersonTable } from "./components/PersonTable";
-
-const SAFE_HEADERS = ["email", "Email", "EMAIL"];
+import { CSVUploaders } from "./components/CSVUploaders";
 
 export default function Home() {
-  const [personData, setPersonData] = useState<PersonCSVData[] | null>(null);
-
-  const handleCSVInputChange: ChangeEventHandler<
-    HTMLInputElement
-  > = inputEvent => {
-    if (!inputEvent.target.files || inputEvent.target.files.length === 0)
-      return;
-
-    const file = inputEvent.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = fileEvent => {
-      const csvData = fileEvent.target?.result;
-      const jsonData = convertCSVToJson<PersonCSVData>(
-        csvData as string,
-        SAFE_HEADERS,
-        "email",
-      );
-      if (!jsonData) {
-        inputEvent.target.value = "";
-      }
-      setPersonData(jsonData);
-    };
-
-    reader.readAsText(file);
-  };
+  const csrfToken = headers().get("X-CSRF-Token");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between space-y-16 ">
@@ -65,25 +32,7 @@ export default function Home() {
               </span>
             </div>
 
-            {!personData ? (
-              <div className="flex space-x-5 pb-5">
-                <ActionCard
-                  cardTitle="Enrich People"
-                  cardDescription="Upload a CSV or Excel of up to 500 people email and enrich their information for free."
-                  buttonText="Upload CSV"
-                  onDataLoad={handleCSVInputChange}
-                />
-
-                <ActionCard
-                  cardTitle="Enrich Company"
-                  cardDescription="Upload a CSV or Excel of up to 500 company website and enrich information for free.."
-                  buttonText="Upload CSV"
-                  onDataLoad={handleCSVInputChange}
-                />
-              </div>
-            ) : null}
-
-            {personData ? <PersonTable rowData={personData} /> : null}
+            <CSVUploaders csrfToken={csrfToken} />
           </div>
         </div>
       </Container>
