@@ -14,7 +14,8 @@ import type {
   PersonEnrichData,
 } from "@/types/PersonEnrich.type";
 import { cn } from "@/utils/common";
-import { useCallback, useEffect, useState } from "react";
+import { SparklesIcon } from "@heroicons/react/20/solid";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type PersonTableProps = {
   rowData: PersonCSVData[];
@@ -28,14 +29,25 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
 
   const { getFingerprint } = useFingerprint();
 
-  const updateEnrichedList = useCallback((data: PersonEnrichData) => {
-    setEnrichedData(prev => {
-      setProcessingEmails(prev => prev.filter(email => email !== data.email));
-      return prev.map(row => {
-        return row.email === data.email ? data : row;
+  const isEnriching = useMemo(() => {
+    return processingEmails.length > 0;
+  }, [processingEmails]);
+
+  const updateEnrichedList = useCallback(
+    (data: PersonEnrichData, success: boolean) => {
+      setEnrichedData(prev => {
+        setProcessingEmails(prev => prev.filter(email => email !== data.email));
+        if (success) {
+          return prev.map(row => {
+            return row.email === data.email ? data : row;
+          });
+        } else {
+          return prev.filter(row => row.email !== data.email);
+        }
       });
-    });
-  }, []);
+    },
+    [],
+  );
 
   const getPersonEnrichedData = useCallback(
     async (personData: PersonCSVData) => {
@@ -51,9 +63,9 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
             },
           },
         );
-        updateEnrichedList(data);
+        updateEnrichedList(data, true);
       } catch (err) {
-        updateEnrichedList(getDefaultPersonEnrichData(personData.email));
+        updateEnrichedList(getDefaultPersonEnrichData(personData.email), false);
         setDataMissingFor(prev => [...prev, personData.email]);
       }
     },
@@ -121,17 +133,22 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
           <TableRow>
             <TableHead className="w-2">#</TableHead>
             <TableHead className="w-1/5">Email</TableHead>
-            <TableHead className="w-1/5">Name</TableHead>
-            <TableHead className="w-1/6">Company</TableHead>
-            <TableHead className="w-1/6">Domain</TableHead>
-            <TableHead className="w-1/4">Job Title</TableHead>
+            <EnrichColumnHeader title="Name" isEnriching={isEnriching} />
+            <EnrichColumnHeader title="Company" isEnriching={isEnriching} />
+            <EnrichColumnHeader title="Domain" isEnriching={isEnriching} />
+            <EnrichColumnHeader title="Job Title" isEnriching={isEnriching} />
           </TableRow>
         </TableHeader>
         <TableBody>
           {enrichedData.map((row, index) => {
             const isProcessing = processingEmails.includes(row.email);
             return (
-              <TableRow key={row.email} className="transition-all">
+              <TableRow
+                key={row.email}
+                className={cn("transition-all", {
+                  "bg-red-50": dataMissingFor.includes(row.email),
+                })}
+              >
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{row.email}</TableCell>
                 <PersonEnrichedCell
@@ -176,6 +193,27 @@ const PersonEnrichedCell = ({
         {data ? <TypingEffect text={data} /> : null}
       </div>
     </TableCell>
+  );
+};
+
+const EnrichColumnHeader = ({
+  title,
+  isEnriching,
+}: {
+  title: string;
+  isEnriching: boolean;
+}) => {
+  return (
+    <TableHead className="w-1/5">
+      <div className="flex items-center gap-1">
+        <SparklesIcon
+          className={cn("h-3", {
+            "animate-bounce": isEnriching,
+          })}
+        />
+        {title}
+      </div>
+    </TableHead>
   );
 };
 
