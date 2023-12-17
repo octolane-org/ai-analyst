@@ -1,3 +1,4 @@
+import SiteHeader from "@/components/SiteHeader";
 import { Toaster } from "@/components/Toaster";
 import { configuration } from "@/constants/configs";
 import { NextAuthProvider } from "@/lib/next-auth";
@@ -27,6 +28,7 @@ export default function RootLayout({
             inter.className,
           )}
         >
+          <SiteHeader />
           <Toaster />
           <NextAuthProvider>{children}</NextAuthProvider>
         </body>
