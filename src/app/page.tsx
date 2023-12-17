@@ -1,12 +1,61 @@
 import Container from "@/components/Container";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
+import { prisma } from "@/lib/prisma";
+import type { PersonEnrichData } from "@/types/PersonEnrich.type";
 import { headers } from "next/headers";
+import { Fragment } from "react";
 
 import { CSVUploaders } from "./components/CSVUploaders";
 import { DownloadButton } from "./components/DownloadButton";
+import { DownloadingData } from "./components/DownloadingData";
 
-export default function Home() {
+type SearchParams = {
+  fp: string;
+  action: string;
+};
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const csrfToken = headers().get("X-CSRF-Token");
+
+  const getDownloadableData = async () => {
+    if (!searchParams.fp || !searchParams.action) return;
+
+    try {
+      const persons = await prisma.personForFingerprint.findMany({
+        where: {
+          fingerprint: searchParams.fp,
+        },
+        select: {
+          person: {
+            select: {
+              email: true,
+              full_name: true,
+              job_title: true,
+              last_name: true,
+              seniority: true,
+              first_name: true,
+              linkedin_url: true,
+              email_verified: true,
+              contact_number: true,
+              current_company: true,
+              current_company_domain: true,
+            },
+          },
+        },
+      });
+
+      return persons.map(person => person.person) as PersonEnrichData[];
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const downloadablePersonData = await getDownloadableData();
 
   return (
     <EnrichContextProvider>
@@ -28,9 +77,15 @@ export default function Home() {
                 Simply upload your file, and with one click and get the enriched
                 data you need to drive your business forward.
               </p>
-              <DownloadButton />
 
-              <CSVUploaders csrfToken={csrfToken} />
+              {downloadablePersonData && downloadablePersonData?.length > 0 ? (
+                <DownloadingData downloadableData={downloadablePersonData} />
+              ) : (
+                <Fragment>
+                  <DownloadButton />
+                  <CSVUploaders csrfToken={csrfToken} />
+                </Fragment>
+              )}
             </div>
           </div>
         </Container>

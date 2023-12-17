@@ -11,7 +11,7 @@ import { PersonTable } from "./PersonTable";
 const SAFE_HEADERS = ["email", "Email", "EMAIL"];
 
 export const CSVUploaders = ({ csrfToken }: { csrfToken: string | null }) => {
-  const { setShowDownloadButton } = useEnrichContext();
+  const { setShowDownloadButton, setEnrichmentType } = useEnrichContext();
 
   const [personData, setPersonData] = useState<PersonCSVData[] | null>(null);
 
@@ -24,6 +24,7 @@ export const CSVUploaders = ({ csrfToken }: { csrfToken: string | null }) => {
     const file = inputEvent.target.files[0];
     const reader = new FileReader();
 
+    setEnrichmentType("person");
     setShowDownloadButton(false);
 
     reader.onload = fileEvent => {
@@ -59,7 +60,6 @@ export const CSVUploaders = ({ csrfToken }: { csrfToken: string | null }) => {
             cardTitle="Enrich Company"
             cardDescription="Upload a CSV or Excel of up to 500 company website and enrich information for free.."
             buttonText="Upload CSV"
-            onDataLoad={handleCSVInputChange}
           />
         </div>
       )}

@@ -1,4 +1,5 @@
 import { axios } from "@/lib/axios";
+import { clearURLSearchParams } from "@/utils/common";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
@@ -9,11 +10,6 @@ export const useFingerprintToUserMap = () => {
   const fingerprint = searchParams.get("fp");
 
   const session = useSession();
-
-  const clearFingerprint = () => {
-    // clear the fingerprint from the URL
-    window.history.replaceState({}, "", "/");
-  };
 
   const mapUserWithFingerprint = useCallback(
     async (email: string, fp: string) => {
@@ -26,8 +22,6 @@ export const useFingerprintToUserMap = () => {
   );
 
   useEffect(() => {
-    console.log(fingerprint, session);
-
     if (
       fingerprint &&
       session.status === "authenticated" &&
@@ -35,6 +29,6 @@ export const useFingerprintToUserMap = () => {
     ) {
       mapUserWithFingerprint(session.data.user.email as string, fingerprint);
     }
-    clearFingerprint();
+    clearURLSearchParams();
   }, [fingerprint, session, mapUserWithFingerprint]);
 };

@@ -9,14 +9,16 @@ import { toast } from "sonner";
 
 export const DownloadButton = () => {
   useFingerprintToUserMap();
-  const { showDownloadButton } = useEnrichContext();
+  const { showDownloadButton, enrichmentType } = useEnrichContext();
   const session = useSession();
   const { getFingerprint } = useFingerprint();
 
   const onDownloadClick = async () => {
     if (session.status === "unauthenticated") {
       const fingerprint = await getFingerprint();
-      signIn("google", { callbackUrl: `/?fp=${fingerprint}` });
+      signIn("google", {
+        callbackUrl: `/?fp=${fingerprint}&action=${enrichmentType}`,
+      });
     } else {
       toast.info("Downloading...");
     }
