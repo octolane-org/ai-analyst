@@ -13,7 +13,7 @@ type CardProps = React.ComponentProps<typeof Card> & {
   cardTitle: string;
   cardDescription: string;
   buttonText: string;
-  onDataLoad: ChangeEventHandler<HTMLInputElement>;
+  onDataLoad?: ChangeEventHandler<HTMLInputElement>;
 };
 
 export function ActionCard({
