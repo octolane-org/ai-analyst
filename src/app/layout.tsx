@@ -1,3 +1,4 @@
+import SiteHeader from "@/components/SiteHeader";
 import { configuration } from "@/constants/configs";
 import { NextAuthProvider } from "@/lib/next-auth";
 import { cn } from "@/utils/common";
@@ -20,6 +21,7 @@ export default function RootLayout({
         <PostHogPageview />
       </Suspense>
       <PHProvider>
+        <SiteHeader />
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",

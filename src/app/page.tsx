@@ -2,12 +2,11 @@
 
 import { ActionCard } from "@/components/ActionCard";
 import Container from "@/components/Container";
-import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
+
+// import { useSession } from "next-auth/react";
 
 export default function Home() {
-  const session = useSession();
+  // const session = useSession();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between space-y-16 ">
@@ -24,10 +23,16 @@ export default function Home() {
             <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-500 via-zinc-900 to-zinc-900 pb-4">
               1-Click B2B Data Enrichment
             </h1>
-            <p className="text-lg text-zinc-500 mb-8">
+            <p className="text-lg text-zinc-500 mb-2">
               Simply upload your file, and with one click and get the enriched
               data you need to drive your business forward.
             </p>
+            <div className="pb-4">
+              {" "}
+              <span className={"text-xs text-gray-500 dark:text-gray-400 "}>
+                No credit card required.
+              </span>
+            </div>
             <div className="flex space-x-5 pb-5">
               <ActionCard
                 cardTitle="Enrich People"
@@ -41,17 +46,10 @@ export default function Home() {
                 buttonText="Upload CSV"
               />
             </div>
-            <Button variant="cta">
+            {/* <Button variant="cta">
               <Link href="/dashboard">Go to Dashboard</Link>
               <svg className="w-4 h-5 ml-2"></svg>
-            </Button>
-
-            {/* Trusted by section */}
-            <div>
-              <span className={"text-xs text-gray-500 dark:text-gray-400"}>
-                No credit card required.
-              </span>
-            </div>
+            </Button> */}
           </div>
 
           {/* {session.status === "authenticated" ? (
