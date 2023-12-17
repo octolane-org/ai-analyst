@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { CsvUploader } from "./components/CsvUploader";
+import { PersonTable } from "./components/PersonTable";
 
 const SAFE_HEADERS = ["email", "Email", "EMAIL"];
 
@@ -35,17 +36,13 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center gap-8 p-24">
       <CsvUploader
         title="Upload Person CSV"
         onDataLoad={handleCSVInputChange}
       />
 
-      {personData ? (
-        <div className="json-container">
-          <pre>{JSON.stringify(personData, null, 2)}</pre>
-        </div>
-      ) : null}
+      {personData ? <PersonTable rowData={personData} /> : null}
     </main>
   );
 }
