@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useEnrichContext } from "@/contexts/enrich-context";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { axios } from "@/lib/axios";
 import type {
@@ -23,6 +24,8 @@ type PersonTableProps = {
 };
 
 export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
+  const { setShowDownloadButton } = useEnrichContext();
+
   const [enrichedData, setEnrichedData] = useState<PersonEnrichData[]>([]);
   const [processingEmails, setProcessingEmails] = useState<string[]>([]);
   const [dataMissingFor, setDataMissingFor] = useState<string[]>([]);
@@ -30,8 +33,12 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
   const { getFingerprint } = useFingerprint();
 
   const isEnriching = useMemo(() => {
-    return processingEmails.length > 0;
-  }, [processingEmails]);
+    const isEnriching = processingEmails.length > 0;
+
+    setShowDownloadButton(!isEnriching);
+
+    return isEnriching;
+  }, [processingEmails.length, setShowDownloadButton]);
 
   const updateEnrichedList = useCallback(
     (data: PersonEnrichData, success: boolean) => {
@@ -83,46 +90,10 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
     }
   }, [getPersonEnrichedData, rowData]);
 
-  // const mockRowProcess = (data: PersonCSVData) => {
-  //   // pause for 2 seconds
-  //   return new Promise<PersonCSVData>(resolve => {
-  //     setTimeout(
-  //       () => {
-  //         setEnrichedData(prev => {
-  //           setProcessingEmails(prev =>
-  //             prev.filter(email => email !== data.email),
-  //           );
-
-  //           return prev.map((row, index) => {
-  //             if (row.email === data.email) {
-  //               return {
-  //                 email: data.email,
-  //                 full_name: "John Doe " + (index + 1),
-  //                 contact_number: "123456789",
-  //                 current_company: "Acme Inc",
-  //                 current_company_domain: "acme.com",
-  //                 email_verified: true,
-  //                 first_name: "John",
-  //                 last_name: "Doe",
-  //                 job_title: "Software Engineer",
-  //                 linkedin_url: "https://linkedin.com/johndoe",
-  //                 seniority: "Senior",
-  //               };
-  //             }
-  //             return row;
-  //           });
-  //         });
-  //         resolve(data);
-  //       },
-  //       Math.random() * 5000 + 1000,
-  //     );
-  //   });
-  // };
-
   return (
     <div className="mt-8">
       <h3 className="font-semibold leading-none tracking-tight">
-        {processingEmails.length > 0
+        {isEnriching
           ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
               rowData.length
             }`

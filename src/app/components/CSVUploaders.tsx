@@ -1,6 +1,7 @@
 "use client";
 
 import { ActionCard } from "@/components/ActionCard";
+import { useEnrichContext } from "@/contexts/enrich-context";
 import type { PersonCSVData } from "@/types/PersonEnrich.type";
 import { convertCSVToJson } from "@/utils/csvToJson";
 import { Fragment, useState, type ChangeEventHandler } from "react";
@@ -10,6 +11,8 @@ import { PersonTable } from "./PersonTable";
 const SAFE_HEADERS = ["email", "Email", "EMAIL"];
 
 export const CSVUploaders = ({ csrfToken }: { csrfToken: string | null }) => {
+  const { setShowDownloadButton } = useEnrichContext();
+
   const [personData, setPersonData] = useState<PersonCSVData[] | null>(null);
 
   const handleCSVInputChange: ChangeEventHandler<
@@ -20,6 +23,8 @@ export const CSVUploaders = ({ csrfToken }: { csrfToken: string | null }) => {
 
     const file = inputEvent.target.files[0];
     const reader = new FileReader();
+
+    setShowDownloadButton(false);
 
     reader.onload = fileEvent => {
       const csvData = fileEvent.target?.result;
