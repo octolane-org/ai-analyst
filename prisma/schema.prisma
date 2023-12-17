@@ -67,3 +67,36 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map(name: "verification_token")
 }
+
+model PersonEnrichment {
+  id                     Int                    @id @default(autoincrement())
+  first_name             String?
+  last_name              String?
+  full_name              String?
+  email                  String
+  linkedin_url           String?
+  email_verified         Boolean?
+  contact_number         String?
+  job_title              String?
+  seniority              String?
+  current_company        String?
+  current_company_domain String?
+  createdAt              DateTime               @default(now()) @map(name: "created_at")
+  updatedAt              DateTime               @default(now()) @updatedAt @map(name: "updated_at")
+  PersonForFingerprint   PersonForFingerprint[]
+
+  @@unique([email])
+  @@map(name: "person_enrichment")
+}
+
+model PersonForFingerprint {
+  id          Int      @id @default(autoincrement())
+  fingerprint String
+  personId    Int      @map(name: "person_id")
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  person PersonEnrichment @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@map(name: "person_for_fingerprint")
+}

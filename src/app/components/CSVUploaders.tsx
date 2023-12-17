@@ -39,24 +39,25 @@ export const CSVUploaders = ({ csrfToken }: { csrfToken: string | null }) => {
 
   return (
     <Fragment>
-      <div className="flex space-x-5 pb-5">
-        <ActionCard
-          cardTitle="Enrich People"
-          cardDescription="Upload a CSV or Excel of up to 500 people email and enrich their information for free."
-          buttonText="Upload CSV"
-          onDataLoad={handleCSVInputChange}
-        />
-
-        <ActionCard
-          cardTitle="Enrich Company"
-          cardDescription="Upload a CSV or Excel of up to 500 company website and enrich information for free.."
-          buttonText="Upload CSV"
-          onDataLoad={handleCSVInputChange}
-        />
-      </div>
       {personData ? (
         <PersonTable rowData={personData} csrfToken={csrfToken} />
-      ) : null}
+      ) : (
+        <div className="flex space-x-5 pb-5">
+          <ActionCard
+            cardTitle="Enrich People"
+            cardDescription="Upload a CSV or Excel of up to 500 people email and enrich their information for free."
+            buttonText="Upload CSV"
+            onDataLoad={handleCSVInputChange}
+          />
+
+          <ActionCard
+            cardTitle="Enrich Company"
+            cardDescription="Upload a CSV or Excel of up to 500 company website and enrich information for free.."
+            buttonText="Upload CSV"
+            onDataLoad={handleCSVInputChange}
+          />
+        </div>
+      )}
     </Fragment>
   );
 };
