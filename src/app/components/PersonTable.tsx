@@ -24,7 +24,8 @@ type PersonTableProps = {
 };
 
 export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
-  const { setShowDownloadButton } = useEnrichContext();
+  const { setShowDownloadButton, setDownloadablePersonData } =
+    useEnrichContext();
 
   const [enrichedData, setEnrichedData] = useState<PersonEnrichData[]>([]);
   const [processingEmails, setProcessingEmails] = useState<string[]>([]);
@@ -35,8 +36,16 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
   const isEnriching = useMemo(() => {
     const isEnriching = processingEmails.length > 0;
     setShowDownloadButton(!isEnriching);
+    if (!isEnriching) {
+      setDownloadablePersonData(enrichedData);
+    }
     return isEnriching;
-  }, [processingEmails.length, setShowDownloadButton]);
+  }, [
+    processingEmails.length,
+    setShowDownloadButton,
+    setDownloadablePersonData,
+    enrichedData,
+  ]);
 
   const updateEnrichedList = useCallback(
     (data: PersonEnrichData, success: boolean) => {
@@ -96,7 +105,7 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
           ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
               rowData.length
             }`
-          : `Found ${dataMissingFor.length} out of ${rowData.length}`}
+          : `Found ${enrichedData.length} out of ${rowData.length}`}
       </h3>
       <Table className="text-justify mt-8">
         <TableHeader>

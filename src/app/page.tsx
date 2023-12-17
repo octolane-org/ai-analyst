@@ -2,6 +2,7 @@ import Container from "@/components/Container";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
 import type { PersonEnrichData } from "@/types/PersonEnrich.type";
+import type { EnrichmentType } from "@/types/app.type";
 import { headers } from "next/headers";
 import { Fragment } from "react";
 
@@ -79,7 +80,10 @@ export default async function Home({
               </p>
 
               {downloadablePersonData && downloadablePersonData?.length > 0 ? (
-                <DownloadingData downloadableData={downloadablePersonData} />
+                <DownloadingData
+                  downloadableData={downloadablePersonData}
+                  downloadType={searchParams.action as EnrichmentType}
+                />
               ) : (
                 <Fragment>
                   <DownloadButton />

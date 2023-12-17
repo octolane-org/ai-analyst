@@ -1,15 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  COMPANY_ENRICHED_CSV_HEADERS,
+  PERSON_ENRICHED_CSV_HEADERS,
+} from "@/constants/enrich.constants";
 import { useEnrichContext } from "@/contexts/enrich-context";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { useFingerprintToUserMap } from "@/hooks/fingerprintToUser.hook";
+import { jsonToCSV } from "@/utils/jsonToCSV";
 import { signIn, useSession } from "next-auth/react";
-import { toast } from "sonner";
 
 export const DownloadButton = () => {
   useFingerprintToUserMap();
-  const { showDownloadButton, enrichmentType } = useEnrichContext();
+  const { showDownloadButton, enrichmentType, downloadablePersonData } =
+    useEnrichContext();
   const session = useSession();
   const { getFingerprint } = useFingerprint();
 
@@ -20,7 +25,13 @@ export const DownloadButton = () => {
         callbackUrl: `/?fp=${fingerprint}&action=${enrichmentType}`,
       });
     } else {
-      toast.info("Downloading...");
+      jsonToCSV(
+        enrichmentType === "person"
+          ? PERSON_ENRICHED_CSV_HEADERS
+          : COMPANY_ENRICHED_CSV_HEADERS,
+        downloadablePersonData,
+        `octolane-${enrichmentType}-enrichment.csv`,
+      );
     }
   };
 
