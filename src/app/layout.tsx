@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/Toaster";
 import { configuration } from "@/constants/configs";
 import { NextAuthProvider } from "@/lib/next-auth";
 import { cn } from "@/utils/common";
@@ -26,6 +27,7 @@ export default function RootLayout({
             inter.className,
           )}
         >
+          <Toaster />
           <NextAuthProvider>{children}</NextAuthProvider>
         </body>
       </PHProvider>
