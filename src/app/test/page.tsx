@@ -1,5 +1,6 @@
 "use client";
 
+import type { PersonCSVData } from "@/types/PersonEnrich.type";
 import type { ChangeEventHandler } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -8,40 +9,8 @@ import { CsvUploader } from "./components/CsvUploader";
 
 const SAFE_HEADERS = ["email", "Email", "EMAIL"];
 
-const convertCSVToJson = (csvData: string) => {
-  const lines = csvData.split("\n");
-  const headers = lines[0].split(",");
-  const result = [];
-
-  if (
-    !headers.some(header =>
-      SAFE_HEADERS.includes(header.replace(/\\r/g, "").trim()),
-    )
-  ) {
-    toast.error("No header detected as Email");
-    return null;
-  }
-
-  for (let i = 1; i < lines.length; i++) {
-    const obj: Record<string, any> = {};
-    const currentLine = lines[i].split(",");
-
-    for (let j = 0; j < headers.length; j++) {
-      if (SAFE_HEADERS.includes(headers[j].replace(/\\r/g, "").trim())) {
-        obj["email"] = currentLine[j].trim();
-      }
-    }
-
-    result.push(obj);
-  }
-
-  return result;
-};
-
 export default function Home() {
-  const [personData, setPersonData] = useState<Record<string, any>[] | null>(
-    null,
-  );
+  const [personData, setPersonData] = useState<PersonCSVData[] | null>(null);
 
   const handleCSVInputChange: ChangeEventHandler<
     HTMLInputElement
@@ -80,3 +49,32 @@ export default function Home() {
     </main>
   );
 }
+
+const convertCSVToJson = (csvData: string): PersonCSVData[] | null => {
+  const lines = csvData.split("\n");
+  const headers = lines[0].split(",");
+  const result: PersonCSVData[] = [];
+
+  if (
+    !headers.some(header =>
+      SAFE_HEADERS.includes(header.replace(/\\r/g, "").trim()),
+    )
+  ) {
+    toast.error("No header detected as Email");
+    return null;
+  }
+
+  for (let i = 1; i < lines.length; i++) {
+    const currentLine = lines[i].split(",");
+
+    for (let j = 0; j < headers.length; j++) {
+      if (SAFE_HEADERS.includes(headers[j].replace(/\\r/g, "").trim())) {
+        result.push({
+          email: currentLine[j].trim(),
+        });
+      }
+    }
+  }
+
+  return result;
+};
