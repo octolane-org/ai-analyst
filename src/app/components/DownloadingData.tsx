@@ -30,7 +30,31 @@ export const DownloadingData = ({
         downloadType === "person"
           ? PERSON_ENRICHED_CSV_HEADERS
           : COMPANY_ENRICHED_CSV_HEADERS,
-        downloadableData,
+        downloadType === "person"
+          ? (downloadableData as PersonEnrichData[]).map(
+              person =>
+                `"${person.full_name ?? ""}","${person.email}","${
+                  person.job_title ?? ""
+                }","${person.linkedin_url ?? ""}","${
+                  person.current_company ?? ""
+                }","${person.current_company_domain ?? ""}","${
+                  person.email_verified ?? ""
+                }","${person.seniority ?? ""}","${
+                  person.contact_number ?? ""
+                }"`,
+            )
+          : (downloadableData as CompanyEnrichData[]).map(
+              company =>
+                `"${company.company_name ?? ""}","${company.domain}","${
+                  `https://linkedin.com/${company.linkedin_url}` ?? ""
+                }","${company.employee_size_range ?? ""}","${
+                  company.estimated_annual_revenue ?? ""
+                }","${company.twitter_url ?? ""}","${
+                  company.twitter_followers ?? ""
+                }","${company.primary_location ?? ""}","${
+                  company.founded_at ?? ""
+                }","${company.industry ?? ""}"`,
+            ),
         `octolane-${downloadType}-enrichment.csv`,
       );
 
