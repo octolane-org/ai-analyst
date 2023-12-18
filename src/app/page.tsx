@@ -1,4 +1,5 @@
 import Container from "@/components/Container";
+import { EnrichTable } from "@/components/Tables/EnrichTable";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
 import type { PersonEnrichData } from "@/types/PersonEnrich.type";
@@ -87,7 +88,8 @@ export default async function Home({
               ) : (
                 <Fragment>
                   <DownloadButton />
-                  <CSVUploaders csrfToken={csrfToken} />
+                  <EnrichTable csrfToken={csrfToken} />
+                  <CSVUploaders />
                 </Fragment>
               )}
             </div>
