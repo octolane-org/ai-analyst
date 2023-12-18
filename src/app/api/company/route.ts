@@ -22,7 +22,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { data } = await axios.post<{ data: CompanyEnrichData }>(
+    const { data } = await axios.post<{
+      data: Omit<CompanyEnrichData, "founded_at">;
+    }>(
       "https://enrich.octolane.com/v1/company",
       { domain: companyData.domain },
       { headers: { "x-api-key": configuration.octolaneAPIKey } },
