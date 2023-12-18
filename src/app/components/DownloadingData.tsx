@@ -4,7 +4,10 @@ import {
   COMPANY_ENRICHED_CSV_HEADERS,
   PERSON_ENRICHED_CSV_HEADERS,
 } from "@/constants/enrich.constants";
-import type { PersonEnrichData } from "@/types/PersonEnrich.type";
+import type {
+  CompanyEnrichData,
+  PersonEnrichData,
+} from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { clearURLSearchParams } from "@/utils/common";
 import { jsonToCSV } from "@/utils/jsonToCSV";
@@ -14,7 +17,7 @@ export const DownloadingData = ({
   downloadableData,
   downloadType = "person",
 }: {
-  downloadableData: PersonEnrichData[];
+  downloadableData: PersonEnrichData[] | CompanyEnrichData[];
   downloadType: EnrichmentType;
 }) => {
   const [downloading, setDownloading] = useState(false);

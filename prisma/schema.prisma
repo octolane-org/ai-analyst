@@ -107,12 +107,13 @@ model CompanyEnrichment {
   domain                   String
   company_name             String?
   industry                 String?
-  founded_at               String?
+  founded_at               Int?
   linkedin_url             String?
   primary_location         String?
   twitter_url              String?
   twitter_followers        String?
   estimated_annual_revenue String?
+  employee_size_range      String?
   tags                     Json?
   createdAt                DateTime                @default(now()) @map(name: "created_at")
   updatedAt                DateTime                @default(now()) @updatedAt @map(name: "updated_at")
@@ -129,7 +130,7 @@ model CompanyForFingerprint {
   createdAt   DateTime @default(now()) @map(name: "created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
 
-  person CompanyEnrichment @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company CompanyEnrichment @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@map(name: "company_for_fingerprint")
 }

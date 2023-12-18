@@ -1,8 +1,12 @@
 import Container from "@/components/Container";
 import { EnrichTable } from "@/components/Tables/EnrichTable";
+import { ENRICHMENT_TYPE } from "@/constants/enrich.constants";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
-import type { PersonEnrichData } from "@/types/PersonEnrich.type";
+import type {
+  CompanyEnrichData,
+  PersonEnrichData,
+} from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { headers } from "next/headers";
 import { Fragment } from "react";
@@ -23,7 +27,7 @@ export default async function Home({
 }) {
   const csrfToken = headers().get("X-CSRF-Token");
 
-  const getDownloadableData = async () => {
+  const getDownloadablePersonData = async () => {
     if (!searchParams.fp || !searchParams.action) return;
 
     try {
@@ -34,30 +38,93 @@ export default async function Home({
         select: {
           person: {
             select: {
-              email: true,
               full_name: true,
+              email: true,
               job_title: true,
-              last_name: true,
-              seniority: true,
-              first_name: true,
               linkedin_url: true,
-              email_verified: true,
-              contact_number: true,
               current_company: true,
               current_company_domain: true,
+              email_verified: true,
+              seniority: true,
+              contact_number: true,
             },
           },
         },
       });
 
-      return persons.map(person => person.person) as PersonEnrichData[];
+      return persons.map(
+        ({ person }): PersonEnrichData => ({
+          full_name: person.full_name ?? "",
+          email: person.email,
+          job_title: person.job_title ?? "",
+          linkedin_url: person.linkedin_url ?? "",
+          current_company: person.current_company ?? "",
+          current_company_domain: person.current_company_domain ?? "",
+          email_verified: person.email_verified ?? false,
+          seniority: person.seniority ?? "",
+          contact_number: person.contact_number ?? "",
+        }),
+      );
     } catch (error) {
       console.error(error);
       return [];
     }
   };
 
-  const downloadablePersonData = await getDownloadableData();
+  const getDownloadableCompanyData = async () => {
+    if (!searchParams.fp || !searchParams.action) return;
+
+    try {
+      const company = await prisma.companyForFingerprint.findMany({
+        where: {
+          fingerprint: searchParams.fp,
+        },
+        select: {
+          company: {
+            select: {
+              company_name: true,
+              domain: true,
+              linkedin_url: true,
+              employee_size_range: true,
+              estimated_annual_revenue: true,
+              twitter_url: true,
+              twitter_followers: true,
+              primary_location: true,
+              founded_at: true,
+              industry: true,
+              tags: true,
+            },
+          },
+        },
+      });
+
+      return company.map(
+        ({ company }): CompanyEnrichData => ({
+          company_name: company.company_name ?? "",
+          domain: company.domain ?? "",
+          linkedin_url: company.linkedin_url ?? "",
+          employee_size_range: company.employee_size_range ?? "",
+          estimated_annual_revenue: company.estimated_annual_revenue ?? "",
+          twitter_url: company.twitter_url ?? "",
+          twitter_followers: company.twitter_followers ?? "",
+          primary_location: company.primary_location ?? "",
+          founded_at: company.founded_at ?? "",
+          industry: company.industry ?? "",
+          tags: company.tags ? JSON.parse(company.tags as string) : "",
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const downloadablePersonData =
+    searchParams.action === ENRICHMENT_TYPE.PERSON
+      ? await getDownloadablePersonData()
+      : searchParams.action === ENRICHMENT_TYPE.COMPANY
+        ? await getDownloadableCompanyData()
+        : [];
 
   return (
     <EnrichContextProvider>

@@ -24,12 +24,12 @@ export type CompanyEnrichData = {
   domain: string;
   company_name?: string;
   industry?: string;
-  founded_at?: string;
+  founded_at?: number | string;
   primary_location?: string;
   linkedin_url?: string;
   twitter_url?: string;
   twitter_followers?: string;
   estimated_annual_revenue?: string;
   employee_size_range?: string;
-  tags?: string[];
+  tags?: string | string[];
 };

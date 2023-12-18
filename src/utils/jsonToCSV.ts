@@ -1,16 +1,13 @@
-import type { PersonEnrichData } from "@/types/PersonEnrich.type";
-
 export const jsonToCSV = (
   headers: string[],
-  json: PersonEnrichData[],
+  data: string[],
   filename: string,
 ) => {
-  const csvRows = [headers, ...json.map(row => Object.values(row))];
+  const csvRows = [headers, ...data];
 
-  const csvContent = csvRows
-    .map(row => row.join(","))
-    .join("\n")
-    .replace(/(^\[)|(\]$)/gm, "");
+  const csvContent = csvRows.join("\n").replace(/(^\[)|(\]$)/gm, "");
+
+  console.log(csvContent);
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);

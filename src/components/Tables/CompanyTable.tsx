@@ -182,7 +182,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
-                  data={row.founded_at}
+                  data={row.founded_at?.toString()}
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
@@ -243,7 +243,6 @@ const EnrichColumnHeader = ({
 
 const getDefaultCompanyEnrichData = (domain: string): CompanyEnrichData => ({
   domain,
-  founded_at: "--",
   company_name: "--",
   employee_size_range: "--",
   estimated_annual_revenue: "--",

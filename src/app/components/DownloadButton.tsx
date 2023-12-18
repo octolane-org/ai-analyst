@@ -13,8 +13,12 @@ import { signIn, useSession } from "next-auth/react";
 
 export const DownloadButton = () => {
   useFingerprintToUserMap();
-  const { showDownloadButton, enrichmentType, downloadablePersonData } =
-    useEnrichContext();
+  const {
+    showDownloadButton,
+    enrichmentType,
+    downloadablePersonData,
+    downloadableCompanyData,
+  } = useEnrichContext();
   const session = useSession();
   const { getFingerprint } = useFingerprint();
 
@@ -29,7 +33,31 @@ export const DownloadButton = () => {
         enrichmentType === "person"
           ? PERSON_ENRICHED_CSV_HEADERS
           : COMPANY_ENRICHED_CSV_HEADERS,
-        downloadablePersonData,
+        enrichmentType === "person"
+          ? downloadablePersonData.map(
+              person =>
+                `"${person.full_name ?? ""}","${person.email}","${
+                  person.job_title ?? ""
+                }","${person.linkedin_url ?? ""}","${
+                  person.current_company ?? ""
+                }","${person.current_company_domain ?? ""}","${
+                  person.email_verified ?? ""
+                }","${person.seniority ?? ""}","${
+                  person.contact_number ?? ""
+                }"`,
+            )
+          : downloadableCompanyData.map(
+              company =>
+                `"${company.company_name ?? ""}","${company.domain}","${
+                  `https://linkedin.com/${company.linkedin_url}` ?? ""
+                }","${company.employee_size_range ?? ""}","${
+                  company.estimated_annual_revenue ?? ""
+                }","${company.twitter_url ?? ""}","${
+                  company.twitter_followers ?? ""
+                }","${company.primary_location ?? ""}","${
+                  company.founded_at ?? ""
+                }","${company.industry ?? ""}"`,
+            ),
         `octolane-${enrichmentType}-enrichment.csv`,
       );
     }
