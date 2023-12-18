@@ -96,7 +96,40 @@ model PersonForFingerprint {
   createdAt   DateTime @default(now()) @map(name: "created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
 
-  person PersonEnrichment @relation(fields: [personId], references: [id], onDelete: Cascade)
+  person              PersonEnrichment @relation(fields: [personId], references: [id], onDelete: Cascade)
+  companyEnrichmentId Int?
 
   @@map(name: "person_for_fingerprint")
+}
+
+model CompanyEnrichment {
+  id                       Int                     @id @default(autoincrement())
+  domain                   String
+  company_name             String?
+  industry                 String?
+  founded_at               String?
+  linkedin_url             String?
+  primary_location         String?
+  twitter_url              String?
+  twitter_followers        String?
+  estimated_annual_revenue String?
+  tags                     Json?
+  createdAt                DateTime                @default(now()) @map(name: "created_at")
+  updatedAt                DateTime                @default(now()) @updatedAt @map(name: "updated_at")
+  CompanyForFingerprint    CompanyForFingerprint[]
+
+  @@unique([domain])
+  @@map(name: "company_enrichment")
+}
+
+model CompanyForFingerprint {
+  id          Int      @id @default(autoincrement())
+  fingerprint String
+  companyId   Int      @map(name: "company_id")
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  person CompanyEnrichment @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map(name: "company_for_fingerprint")
 }

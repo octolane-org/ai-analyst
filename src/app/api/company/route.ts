@@ -1,5 +1,6 @@
 import { configuration } from "@/constants/configs";
 import { axios } from "@/lib/axios";
+import { prisma } from "@/lib/prisma";
 import type {
   CompanyCSVData,
   CompanyEnrichData,
@@ -27,31 +28,31 @@ export async function POST(request: Request) {
       { headers: { "x-api-key": configuration.octolaneAPIKey } },
     );
 
-    const personEnrichedData = data.data;
+    const companyEnrichedData = data.data;
 
-    // // store the data in DB with fingerprint
-    // prisma.$transaction(async trx => {
-    //   const person = await trx.personEnrichment.upsert({
-    //     where: { email: personEnrichedData.domain },
-    //     create: personEnrichedData,
-    //     update: personEnrichedData,
-    //   });
+    // store the data in DB with fingerprint
+    prisma.$transaction(async trx => {
+      const company = await trx.companyEnrichment.upsert({
+        where: { domain: companyEnrichedData.domain },
+        create: companyEnrichedData,
+        update: companyEnrichedData,
+      });
 
-    //   const personForFingerprint = await trx.personForFingerprint.findFirst({
-    //     where: { fingerprint, personId: person.id },
-    //   });
+      const companyForFingerprint = await trx.companyForFingerprint.findFirst({
+        where: { fingerprint, companyId: company.id },
+      });
 
-    //   if (!personForFingerprint) {
-    //     await trx.personForFingerprint.create({
-    //       data: {
-    //         fingerprint,
-    //         personId: person.id,
-    //       },
-    //     });
-    //   }
-    // });
+      if (!companyForFingerprint) {
+        await trx.companyForFingerprint.create({
+          data: {
+            fingerprint,
+            companyId: company.id,
+          },
+        });
+      }
+    });
 
-    return Response.json(personEnrichedData);
+    return Response.json(companyEnrichedData);
   } catch (err) {
     const error = err as AxiosError;
 
