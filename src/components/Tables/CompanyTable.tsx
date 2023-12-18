@@ -112,7 +112,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
             }`
           : `Found ${enrichedData.length} out of ${rowData.length}`}
       </h3>
-      <Table className="text-justify mt-8 overflow-auto w-max min-h-[500px]">
+      <Table className="text-justify mt-8 overflow-auto w-max">
         <TableHeader>
           <TableRow>
             <TableHead className="w-2">#</TableHead>
@@ -143,7 +143,6 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
             />
             <EnrichColumnHeader title="Founded At" isEnriching={isEnriching} />
             <EnrichColumnHeader title="Industry" isEnriching={isEnriching} />
-            <EnrichColumnHeader title="Tags" isEnriching={isEnriching} />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -188,10 +187,6 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                 />
                 <PersonEnrichedCell
                   data={row.industry}
-                  isProcessing={isProcessing}
-                />
-                <PersonEnrichedCell
-                  data={row.tags?.join(", ")}
                   isProcessing={isProcessing}
                 />
               </TableRow>
