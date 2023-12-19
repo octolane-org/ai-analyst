@@ -1,7 +1,7 @@
-import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/route";
 import Container from "@/components/Container";
 import { GoogleLoginButton } from "@/components/GoogleLoginButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { nextAuthOptions } from "@/lib/next-auth-config";
 import type { ServerPageProps } from "@/types/common.type";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { getServerSession } from "next-auth";
