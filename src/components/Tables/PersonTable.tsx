@@ -91,11 +91,11 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
     if (rowData) {
       const batchSize = 5;
       let index = 0;
-  
+
       const processBatch = async () => {
         const batch = rowData.slice(index, index + batchSize);
         await Promise.all(batch.map(getPersonEnrichedData));
-  
+
         index += batchSize;
         if (index < rowData.length) {
           processBatch();

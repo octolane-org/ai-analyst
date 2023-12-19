@@ -96,11 +96,11 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
     if (rowData) {
       const batchSize = 5;
       let index = 0;
-  
+
       const processBatch = async () => {
         const batch = rowData.slice(index, index + batchSize);
         await Promise.all(batch.map(getCompanyEnrichedData));
-  
+
         index += batchSize;
         if (index < rowData.length) {
           processBatch();
