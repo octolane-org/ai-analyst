@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import { FINGERPRINT_HEADER } from "@/constants/configs";
 import {
   COMPANY_ENRICHED_CSV_HEADERS,
@@ -14,6 +15,7 @@ import type { APILimitResponse } from "@/types/api.type";
 import { jsonToCSV } from "@/utils/jsonToCSV";
 import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
+import posthog from "posthog-js";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -76,6 +78,13 @@ export const DownloadButton = () => {
                 }","${company.industry ?? ""}"`,
             ),
         `octolane-${enrichmentType}-enrichment.csv`,
+      );
+
+      posthog.capture(
+        POSTHOG_EVENTS.DOWNLOAD,
+        session.status === "authenticated"
+          ? { email: session.data.user?.email }
+          : {},
       );
     }
   };

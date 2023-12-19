@@ -1,8 +1,11 @@
 "use client";
 
 import Container from "@/components/Container";
+import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
+import { CALENDAR_LINK } from "@/constants/configs";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import posthog from "posthog-js";
 
 import { Button } from "./ui/button";
 
@@ -25,9 +28,21 @@ const SiteHeader = () => {
             Octolane AI
           </h1>
 
-          <div className={"flex flex-1 items-center justify-end space-x-4 "}>
+          <a
+            className={"flex flex-1 items-center justify-end space-x-4 "}
+            href={CALENDAR_LINK}
+            target="_blank"
+            onClick={() => {
+              posthog.capture(
+                POSTHOG_EVENTS.TALK_TO_FOUNDERS.NAVBAR,
+                session.status === "authenticated"
+                  ? { email: session.data.user?.email }
+                  : {},
+              );
+            }}
+          >
             Talk to founders
-          </div>
+          </a>
 
           {session.status === "authenticated" ? (
             <Button

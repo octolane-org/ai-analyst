@@ -1,5 +1,6 @@
 "use client";
 
+import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import { FINGERPRINT_HEADER } from "@/constants/configs";
 import {
   COMPANY_ENRICHED_CSV_HEADERS,
@@ -16,6 +17,8 @@ import type { EnrichmentType } from "@/types/app.type";
 import { clearURLSearchParams } from "@/utils/common";
 import { jsonToCSV } from "@/utils/jsonToCSV";
 import type { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
+import posthog from "posthog-js";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -32,6 +35,7 @@ export const DownloadingData = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [userEnrichLimit, setUserEnrichLimit] = useState(500);
 
+  const session = useSession();
   const { getFingerprint } = useFingerprint();
 
   const checkLimit = useCallback(async () => {
@@ -104,10 +108,17 @@ export const DownloadingData = ({
         `octolane-${downloadType}-enrichment.csv`,
       );
 
+      posthog.capture(
+        POSTHOG_EVENTS.REGISTER_TO_DOWNLOAD,
+        session.status === "authenticated"
+          ? { email: session.data.user?.email }
+          : {},
+      );
+
       setDownloading(false);
       clearURLSearchParams();
     },
-    [checkLimit, downloadableData],
+    [checkLimit, downloadableData, session],
   );
 
   useEffect(() => {

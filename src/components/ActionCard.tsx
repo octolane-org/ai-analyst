@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import {
   ENRICHMENT_TYPE,
   SAFE_COMPANY_HEADERS,
@@ -16,6 +17,8 @@ import type { CompanyCSVData, PersonCSVData } from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { cn } from "@/utils/common";
 import { convertCSVToJson } from "@/utils/csvToJson";
+import { useSession } from "next-auth/react";
+import posthog from "posthog-js";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
 type CardProps = React.ComponentProps<typeof Card> & {
@@ -45,6 +48,7 @@ export function ActionCard({
     setCompanyCSVData,
   } = useEnrichContext();
   const [shouldClickInput, setShouldClickInput] = useState(false);
+  const session = useSession();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -100,6 +104,14 @@ export function ActionCard({
   const onClick = () => {
     setEnrichmentType(type);
     setShouldClickInput(true);
+    posthog.capture(
+      type === ENRICHMENT_TYPE.PERSON
+        ? POSTHOG_EVENTS.ENRICH_PERSON
+        : POSTHOG_EVENTS.ENRICH_COMPANY,
+      session.status === "authenticated"
+        ? { email: session.data.user?.email }
+        : {},
+    );
   };
 
   return (
