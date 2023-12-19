@@ -15,6 +15,7 @@ import { jsonToCSV } from "@/utils/jsonToCSV";
 import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import LimitExceedDialog from "./LimitExceedDialog";
 
@@ -99,6 +100,7 @@ export const DownloadButton = () => {
       const error = err as AxiosError;
       if (error.response) {
         console.error(error.response.data);
+        toast.error("Something went wrong. Please try again later.");
       }
       return false;
     }

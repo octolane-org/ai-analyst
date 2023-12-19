@@ -92,7 +92,6 @@ export default async function Home({
               primary_location: true,
               founded_at: true,
               industry: true,
-              tags: true,
             },
           },
         },
@@ -110,7 +109,7 @@ export default async function Home({
           primary_location: company.primary_location ?? "",
           founded_at: company.founded_at ?? "",
           industry: company.industry ?? "",
-          tags: company.tags ? JSON.parse(company.tags as string) : "",
+          // tags: company.tags ? JSON.parse(company.tags as string) : "",
         }),
       );
     } catch (error) {

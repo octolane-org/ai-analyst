@@ -1,17 +1,25 @@
 "use client";
 
+import { FINGERPRINT_HEADER } from "@/constants/configs";
 import {
   COMPANY_ENRICHED_CSV_HEADERS,
   PERSON_ENRICHED_CSV_HEADERS,
 } from "@/constants/enrich.constants";
+import { useFingerprint } from "@/hooks/fingerprint.hook";
+import { axios } from "@/lib/axios";
 import type {
   CompanyEnrichData,
   PersonEnrichData,
 } from "@/types/PersonEnrich.type";
+import type { APILimitResponse } from "@/types/api.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { clearURLSearchParams } from "@/utils/common";
 import { jsonToCSV } from "@/utils/jsonToCSV";
+import type { AxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import LimitExceedDialog from "./LimitExceedDialog";
 
 export const DownloadingData = ({
   downloadableData,
@@ -21,10 +29,48 @@ export const DownloadingData = ({
   downloadType: EnrichmentType;
 }) => {
   const [downloading, setDownloading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [userEnrichLimit, setUserEnrichLimit] = useState(500);
+
+  const { getFingerprint } = useFingerprint();
+
+  const checkLimit = useCallback(async () => {
+    const fp = await getFingerprint();
+    try {
+      const { data } = await axios.get<APILimitResponse>("/api/limit", {
+        headers: { [FINGERPRINT_HEADER]: fp },
+      });
+
+      if (
+        data.totalCompanyEnriched + data.totalPersonEnriched >=
+        data.userEnrichmentLimit
+      ) {
+        setOpenDialog(true);
+        setUserEnrichLimit(data.userEnrichmentLimit);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response) {
+        console.error(error.response.data);
+        toast.error("Something went wrong. Please try again later.");
+      }
+      return false;
+    }
+  }, [getFingerprint]);
 
   const downloadDataAsCSV = useCallback(
     async (downloadType: EnrichmentType) => {
       setDownloading(true);
+
+      const hasLimit = await checkLimit();
+
+      if (!hasLimit) {
+        setDownloading(false);
+        clearURLSearchParams();
+        return;
+      }
 
       jsonToCSV(
         downloadType === "person"
@@ -61,7 +107,7 @@ export const DownloadingData = ({
       setDownloading(false);
       clearURLSearchParams();
     },
-    [downloadableData],
+    [checkLimit, downloadableData],
   );
 
   useEffect(() => {
@@ -73,6 +119,12 @@ export const DownloadingData = ({
       <h2 className="text-2xl font-bold">
         {downloading ? "Downloading Data..." : "Downloaded Data"}
       </h2>
+
+      <LimitExceedDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        limit={userEnrichLimit}
+      />
     </div>
   );
 };
