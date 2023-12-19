@@ -89,12 +89,22 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
 
   useEffect(() => {
     if (rowData) {
-      const newData = rowData.map((row): PersonEnrichData => {
-        setProcessingEmails(prev => [...prev, row.email]);
-        getPersonEnrichedData(row);
-        return row;
-      });
-      setEnrichedData(newData);
+      const batchSize = 5;
+      let index = 0;
+  
+      const processBatch = async () => {
+        const batch = rowData.slice(index, index + batchSize);
+        await Promise.all(batch.map(getPersonEnrichedData));
+  
+        index += batchSize;
+        if (index < rowData.length) {
+          processBatch();
+        }
+      };
+
+      processBatch();
+      setProcessingEmails(rowData.map(row => row.email));
+      setEnrichedData(rowData);
     }
   }, [getPersonEnrichedData, rowData]);
 

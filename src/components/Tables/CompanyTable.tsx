@@ -94,12 +94,22 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
 
   useEffect(() => {
     if (rowData) {
-      const newData = rowData.map((row): CompanyEnrichData => {
-        setProcessingDomains(prev => [...prev, row.domain]);
-        getCompanyEnrichedData(row);
-        return row;
-      });
-      setEnrichedData(newData);
+      const batchSize = 5;
+      let index = 0;
+  
+      const processBatch = async () => {
+        const batch = rowData.slice(index, index + batchSize);
+        await Promise.all(batch.map(getCompanyEnrichedData));
+  
+        index += batchSize;
+        if (index < rowData.length) {
+          processBatch();
+        }
+      };
+
+      processBatch();
+      setProcessingDomains(rowData.map(row => row.domain));
+      setEnrichedData(rowData);
     }
   }, [getCompanyEnrichedData, rowData]);
 
