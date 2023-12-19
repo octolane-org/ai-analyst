@@ -32,3 +32,5 @@ export const configuration = {
 };
 
 export const FINGERPRINT_HEADER = "x-fingerprint";
+
+export const CALENDAR_LINK = "https://cal.com/octolane/20min";

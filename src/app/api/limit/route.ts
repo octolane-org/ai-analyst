@@ -1,5 +1,6 @@
 import { FINGERPRINT_HEADER } from "@/constants/configs";
 import { prisma } from "@/lib/prisma";
+import type { APILimitResponse } from "@/types/api.type";
 import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -40,12 +41,14 @@ export async function GET(request: Request, response: Response) {
       }),
     ]);
 
-    return Response.json({
+    const result: APILimitResponse = {
       totalPersonEnriched,
       totalCompanyEnriched,
       userFingerprint: fingerprint,
       userEnrichmentLimit: enrichmentLimit,
-    });
+    };
+
+    return Response.json(result);
   } catch (err) {
     console.error(err);
 

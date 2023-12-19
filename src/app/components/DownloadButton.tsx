@@ -10,11 +10,18 @@ import { useEnrichContext } from "@/contexts/enrich-context";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { useFingerprintToUserMap } from "@/hooks/fingerprintToUser.hook";
 import { axios } from "@/lib/axios";
+import type { APILimitResponse } from "@/types/api.type";
 import { jsonToCSV } from "@/utils/jsonToCSV";
 import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
+import { useState } from "react";
+
+import LimitExceedDialog from "./LimitExceedDialog";
 
 export const DownloadButton = () => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [userEnrichLimit, setUserEnrichLimit] = useState(500);
+
   useFingerprintToUserMap();
   const {
     showDownloadButton,
@@ -32,6 +39,12 @@ export const DownloadButton = () => {
         callbackUrl: `/?fp=${fingerprint}&action=${enrichmentType}`,
       });
     } else {
+      const hasLimit = await checkLimit();
+
+      if (!hasLimit) {
+        return;
+      }
+
       jsonToCSV(
         enrichmentType === "person"
           ? PERSON_ENRICHED_CSV_HEADERS
@@ -69,20 +82,30 @@ export const DownloadButton = () => {
   const checkLimit = async () => {
     const fp = await getFingerprint();
     try {
-      const { data } = await axios.get("/api/limit", {
+      const { data } = await axios.get<APILimitResponse>("/api/limit", {
         headers: { [FINGERPRINT_HEADER]: fp },
       });
+
+      if (
+        data.totalCompanyEnriched + data.totalPersonEnriched >=
+        data.userEnrichmentLimit
+      ) {
+        setOpenDialog(true);
+        setUserEnrichLimit(data.userEnrichmentLimit);
+        return false;
+      }
+      return true;
     } catch (err) {
       const error = err as AxiosError;
       if (error.response) {
         console.error(error.response.data);
       }
+      return false;
     }
   };
 
   return (
     <div className="pb-4 flex flex-col items-center gap-1">
-      <Button onClick={checkLimit}>Hello</Button>
       {showDownloadButton ? (
         <Button variant="cta" onClick={onDownloadClick}>
           {session.status === "unauthenticated"
@@ -95,6 +118,12 @@ export const DownloadButton = () => {
           ? "Work email required!"
           : "No credit card required."}
       </span>
+
+      <LimitExceedDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        limit={userEnrichLimit}
+      />
     </div>
   );
 };
