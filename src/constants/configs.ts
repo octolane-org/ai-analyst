@@ -30,3 +30,5 @@ export const configuration = {
     },
   },
 };
+
+export const FINGERPRINT_HEADER = "x-fingerprint";

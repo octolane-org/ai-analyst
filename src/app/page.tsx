@@ -119,7 +119,7 @@ export default async function Home({
     }
   };
 
-  const downloadablePersonData =
+  const downloadableData =
     searchParams.action === ENRICHMENT_TYPE.PERSON
       ? await getDownloadablePersonData()
       : searchParams.action === ENRICHMENT_TYPE.COMPANY
@@ -147,9 +147,9 @@ export default async function Home({
                 data you need to drive your business forward.
               </p>
 
-              {downloadablePersonData && downloadablePersonData?.length > 0 ? (
+              {downloadableData && downloadableData?.length > 0 ? (
                 <DownloadingData
-                  downloadableData={downloadablePersonData}
+                  downloadableData={downloadableData}
                   downloadType={searchParams.action as EnrichmentType}
                 />
               ) : (

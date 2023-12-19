@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { FINGERPRINT_HEADER } from "@/constants/configs";
 import {
   COMPANY_ENRICHED_CSV_HEADERS,
   PERSON_ENRICHED_CSV_HEADERS,
@@ -8,7 +9,9 @@ import {
 import { useEnrichContext } from "@/contexts/enrich-context";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { useFingerprintToUserMap } from "@/hooks/fingerprintToUser.hook";
+import { axios } from "@/lib/axios";
 import { jsonToCSV } from "@/utils/jsonToCSV";
+import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
 
 export const DownloadButton = () => {
@@ -63,8 +66,23 @@ export const DownloadButton = () => {
     }
   };
 
+  const checkLimit = async () => {
+    const fp = await getFingerprint();
+    try {
+      const { data } = await axios.get("/api/limit", {
+        headers: { [FINGERPRINT_HEADER]: fp },
+      });
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response) {
+        console.error(error.response.data);
+      }
+    }
+  };
+
   return (
     <div className="pb-4 flex flex-col items-center gap-1">
+      <Button onClick={checkLimit}>Hello</Button>
       {showDownloadButton ? (
         <Button variant="cta" onClick={onDownloadClick}>
           {session.status === "unauthenticated"
