@@ -1,11 +1,10 @@
 import { FINGERPRINT_HEADER } from "@/constants/configs";
+import { nextAuthOptions } from "@/lib/next-auth-config";
 import { prisma } from "@/lib/prisma";
 import type { APILimitResponse } from "@/types/api.type";
 import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-
-import { nextAuthOptions } from "../auth/[...nextauth]/route";
 
 export async function GET(request: Request, response: Response) {
   // Get fingerpring from header
