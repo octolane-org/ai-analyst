@@ -8,6 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 
+import GitHubIcon from "./icons/GitHub";
+import TwitterIcon from "./icons/Twitter";
 import { Button } from "./ui/button";
 
 const SiteHeader = () => {
@@ -16,7 +18,7 @@ const SiteHeader = () => {
   return (
     <div className="sticky top-0 z-20">
       <Container>
-        <div className="flex py-6 px-1 relative items-center justify-between">
+        <div className="flex py-6 px-1 relative items-center justify-between w-full">
           <Link href="/" className="flex items-center">
             <div className="shrink-0 mr-4">
               <Image
@@ -31,31 +33,43 @@ const SiteHeader = () => {
             </h1>
           </Link>
 
-          <a
-            className={"flex flex-1 items-center justify-end space-x-4 "}
-            href={CALENDAR_LINK}
-            target="_blank"
-            onClick={() => {
-              posthog.capture(
-                POSTHOG_EVENTS.TALK_TO_FOUNDERS.NAVBAR,
-                session.status === "authenticated"
-                  ? { email: session.data.user?.email }
-                  : {},
-              );
-            }}
-          >
-            Talk to founders
-          </a>
-
-          {session.status === "authenticated" ? (
-            <Button
-              className="ml-5"
-              variant="outline"
-              onClick={() => signOut()}
+          <div className="flex-1 flex items-center justify-end gap-2">
+            <a
+              href="https://github.com/octolane-org/csv-to-enrich-app"
+              target="_blank"
             >
-              Logout
-            </Button>
-          ) : null}
+              <GitHubIcon />
+            </a>
+            <a href="https://twitter.com/octolane_app" target="_blank">
+              <TwitterIcon />
+            </a>
+
+            <a
+              className="flex items-center justify-end space-x-4"
+              href={CALENDAR_LINK}
+              target="_blank"
+              onClick={() => {
+                posthog.capture(
+                  POSTHOG_EVENTS.TALK_TO_FOUNDERS.NAVBAR,
+                  session.status === "authenticated"
+                    ? { email: session.data.user?.email }
+                    : {},
+                );
+              }}
+            >
+              Talk to founders
+            </a>
+
+            {session.status === "authenticated" ? (
+              <Button
+                className="ml-5"
+                variant="outline"
+                onClick={() => signOut()}
+              >
+                Logout
+              </Button>
+            ) : null}
+          </div>
         </div>
       </Container>
     </div>
