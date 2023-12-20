@@ -13,6 +13,7 @@ import { useFingerprintToUserMap } from "@/hooks/fingerprintToUser.hook";
 import { axios } from "@/lib/axios";
 import type { APILimitResponse } from "@/types/api.type";
 import { jsonToCSV } from "@/utils/jsonToCSV";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
 import posthog from "posthog-js";
@@ -124,16 +125,15 @@ export const DownloadButton = () => {
   return (
     <div className="pb-4 flex flex-col items-center gap-1">
       {showDownloadButton ? (
-        <Button variant="cta" onClick={onDownloadClick}>
-          {session.status === "unauthenticated"
-            ? "Register to download"
-            : "Download"}
+        <Button variant="cta" size="lg" onClick={onDownloadClick}>
+          <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+          Download
         </Button>
       ) : null}
       <span className={"text-xs text-gray-500 dark:text-gray-400"}>
         {session.status === "unauthenticated" && showDownloadButton
           ? "Work email required!"
-          : "No credit card required."}
+          : "No credit card required. Work email required!"}
       </span>
 
       <LimitExceedDialog

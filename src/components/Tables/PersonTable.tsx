@@ -18,6 +18,8 @@ import { cn } from "@/utils/common";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { Spinner } from "../Spinner";
+
 type PersonTableProps = {
   rowData: PersonCSVData[];
   csrfToken: string | null;
@@ -110,13 +112,16 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
 
   return (
     <div className="mt-8">
-      <h3 className="font-semibold leading-none tracking-tight">
-        {isEnriching
-          ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
-              rowData.length
-            }`
-          : `Found ${enrichedData.length} out of ${rowData.length}`}
-      </h3>
+      <div className="w-full justify-center flex items-center gap-1">
+        {isEnriching ? <Spinner /> : null}
+        <h3 className="font-semibold leading-none tracking-tight">
+          {isEnriching
+            ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
+                rowData.length
+              }`
+            : `Found ${enrichedData.length} out of ${rowData.length}`}
+        </h3>
+      </div>
       <Table className="text-justify mt-8">
         <TableHeader>
           <TableRow>
@@ -129,7 +134,7 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {enrichedData.map((row, index) => {
+          {enrichedData.slice(0, 10).map((row, index) => {
             const isProcessing = processingEmails.includes(row.email);
             return (
               <TableRow

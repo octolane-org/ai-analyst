@@ -18,6 +18,8 @@ import { cn } from "@/utils/common";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { Spinner } from "../Spinner";
+
 type CompanyTableProps = {
   rowData: CompanyCSVData[];
   csrfToken: string | null;
@@ -115,14 +117,20 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
 
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
-      <h3 className="font-semibold leading-none tracking-tight">
-        {isEnriching
-          ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
-              rowData.length
-            }`
-          : `Found ${enrichedData.length} out of ${rowData.length}`}
-      </h3>
-      <Table className="text-justify mt-8 overflow-auto w-max">
+      <div className="w-full justify-center flex items-center gap-1">
+        {isEnriching ? <Spinner /> : null}
+        <h3 className="font-semibold leading-none tracking-tight">
+          {isEnriching
+            ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
+                rowData.length
+              }`
+            : `Found ${enrichedData.length} out of ${rowData.length}`}
+        </h3>
+      </div>
+      <div className="text-right text-sm mt-8 mb-2 text-zinc-500">
+        Scroll right to see more data
+      </div>
+      <Table className="text-justify overflow-auto w-max">
         <TableHeader>
           <TableRow>
             <TableHead className="w-2">#</TableHead>
@@ -132,31 +140,28 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
               isEnriching={isEnriching}
             />
             <EnrichColumnHeader
-              title="Est. Annual Revenue"
+              title="Social Presense"
               isEnriching={isEnriching}
             />
             <EnrichColumnHeader
               title="Est. Employee Range"
               isEnriching={isEnriching}
             />
+            {/* TODO: Funding data */}
+            <EnrichColumnHeader title="Industry" isEnriching={isEnriching} />
             <EnrichColumnHeader
               title="Primary Location"
               isEnriching={isEnriching}
             />
             <EnrichColumnHeader
-              title="Social Presense"
-              isEnriching={isEnriching}
-            />
-            <EnrichColumnHeader
-              title="Twitter Follower"
+              title="Est. Annual Revenue"
               isEnriching={isEnriching}
             />
             <EnrichColumnHeader title="Founded At" isEnriching={isEnriching} />
-            <EnrichColumnHeader title="Industry" isEnriching={isEnriching} />
           </TableRow>
         </TableHeader>
         <TableBody>
-          {enrichedData.map((row, index) => {
+          {enrichedData.slice(0, 10).map((row, index) => {
             const isProcessing = processingDomains.includes(row.domain);
             return (
               <TableRow
@@ -172,7 +177,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
-                  data={row.estimated_annual_revenue}
+                  data={row.linkedin_url}
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
@@ -180,23 +185,19 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
+                  data={row.industry}
+                  isProcessing={isProcessing}
+                />
+                <PersonEnrichedCell
                   data={row.primary_location}
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
-                  data={row.linkedin_url}
-                  isProcessing={isProcessing}
-                />
-                <PersonEnrichedCell
-                  data={row.twitter_followers}
+                  data={row.estimated_annual_revenue}
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
                   data={row.founded_at?.toString()}
-                  isProcessing={isProcessing}
-                />
-                <PersonEnrichedCell
-                  data={row.industry}
                   isProcessing={isProcessing}
                 />
               </TableRow>

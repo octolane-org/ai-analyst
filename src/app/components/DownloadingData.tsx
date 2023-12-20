@@ -1,7 +1,8 @@
 "use client";
 
+import { CalendarEmbedding } from "@/components/CalendarEmbedding";
 import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
-import { FINGERPRINT_HEADER } from "@/constants/configs";
+import { CALENDAR_LINK, FINGERPRINT_HEADER } from "@/constants/configs";
 import {
   COMPANY_ENRICHED_CSV_HEADERS,
   PERSON_ENRICHED_CSV_HEADERS,
@@ -137,6 +138,22 @@ export const DownloadingData = ({
       <h2 className="text-2xl font-bold">
         {downloading ? "Downloading Data..." : "Downloaded Data"}
       </h2>
+
+      <p>
+        Email{" "}
+        <a
+          href="mailto:one@octolane.com"
+          target="_blank"
+          className="text-blue-600"
+        >
+          one@octolane.com
+        </a>{" "}
+        or book a{" "}
+        <a href={CALENDAR_LINK} target="_blank" className="text-blue-600">
+          quick 20 minutes call to talk to founders
+        </a>
+      </p>
+      <CalendarEmbedding />
 
       <LimitExceedDialog
         open={openDialog}
