@@ -1,6 +1,5 @@
 "use client";
 
-import { CalendarEmbedding } from "@/components/CalendarEmbedding";
 import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import { CALENDAR_LINK, FINGERPRINT_HEADER } from "@/constants/configs";
 import {
@@ -149,7 +148,6 @@ export const DownloadingData = ({
           quick 20 minutes call to talk to founders
         </a>
       </p>
-      <CalendarEmbedding />
 
       <LimitExceedDialog
         open={openDialog}
