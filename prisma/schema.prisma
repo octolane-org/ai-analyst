@@ -104,21 +104,22 @@ model PersonForFingerprint {
 }
 
 model CompanyEnrichment {
-  id                       Int                     @id @default(autoincrement())
-  domain                   String
-  company_name             String?
-  industry                 String?
-  founded_at               Int?
-  linkedin_url             String?
-  primary_location         String?
-  twitter_url              String?
-  twitter_followers        String?
-  estimated_annual_revenue String?
-  employee_size_range      String?
-  tags                     Json?
-  createdAt                DateTime                @default(now()) @map(name: "created_at")
-  updatedAt                DateTime                @default(now()) @updatedAt @map(name: "updated_at")
-  CompanyForFingerprint    CompanyForFingerprint[]
+  id                          Int                     @id @default(autoincrement())
+  domain                      String
+  company_name                String?
+  industry                    String?
+  founded_at                  Int?
+  linkedin_url                String?
+  primary_location            String?
+  twitter_url                 String?
+  twitter_followers           String?
+  estimated_annual_revenue    String?
+  estimated_total_fund_raised Int?
+  employee_size_range         String?
+  tags                        Json?
+  createdAt                   DateTime                @default(now()) @map(name: "created_at")
+  updatedAt                   DateTime                @default(now()) @updatedAt @map(name: "updated_at")
+  CompanyForFingerprint       CompanyForFingerprint[]
 
   @@unique([domain])
   @@map(name: "company_enrichment")

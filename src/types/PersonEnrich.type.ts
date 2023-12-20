@@ -25,6 +25,7 @@ export type CompanyEnrichData = {
   company_name?: string;
   industry?: string;
   founded_at?: number | string;
+  estimated_total_fund_raised?: number | null;
   primary_location?: string;
   linkedin_url?: string;
   twitter_url?: string;

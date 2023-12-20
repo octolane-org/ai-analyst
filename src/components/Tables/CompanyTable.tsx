@@ -14,7 +14,7 @@ import type {
   CompanyCSVData,
   CompanyEnrichData,
 } from "@/types/PersonEnrich.type";
-import { cn } from "@/utils/common";
+import { cn, currencyFormat } from "@/utils/common";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -149,7 +149,10 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
               title="Est. Employee Range"
               isEnriching={isEnriching}
             />
-            {/* TODO: Funding data */}
+            <EnrichColumnHeader
+              title="Est. Fund Raised"
+              isEnriching={isEnriching}
+            />
             <EnrichColumnHeader title="Industry" isEnriching={isEnriching} />
             <EnrichColumnHeader
               title="Primary Location"
@@ -198,6 +201,14 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                 </TableCell>
                 <PersonEnrichedCell
                   data={row.employee_size_range}
+                  isProcessing={isProcessing}
+                />
+                <PersonEnrichedCell
+                  data={
+                    row.estimated_total_fund_raised
+                      ? currencyFormat(row.estimated_total_fund_raised)
+                      : ""
+                  }
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
