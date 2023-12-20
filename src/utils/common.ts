@@ -8,3 +8,7 @@ export const cn = (...inputs: ClassValue[]) => {
 export const clearURLSearchParams = () => {
   window.history.replaceState({}, "", "/");
 };
+
+export const isBrowser = () => {
+  return typeof window !== "undefined";
+};

@@ -3,6 +3,7 @@ import { EnrichTable } from "@/components/Tables/EnrichTable";
 import { ENRICHMENT_TYPE } from "@/constants/enrich.constants";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
+import { captureApiException } from "@/lib/sentry/sentry-browser";
 import type {
   CompanyEnrichData,
   PersonEnrichData,
@@ -67,6 +68,10 @@ export default async function Home({
       );
     } catch (error) {
       console.error(error);
+      captureApiException(error, {
+        context: "getDownloadablePersonData",
+        searchParams,
+      });
       return [];
     }
   };
@@ -114,6 +119,10 @@ export default async function Home({
       );
     } catch (error) {
       console.error(error);
+      captureApiException(error, {
+        context: "getDownloadableCompanyData",
+        searchParams,
+      });
       return [];
     }
   };

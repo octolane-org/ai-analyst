@@ -6,3 +6,6 @@ export type ServerPageProps<Params = any, SearchParams = any> = {
   params: Params;
   searchParams: SearchParams;
 };
+
+export type ReactComponentProps<Props = Record<string, unknown>> =
+  React.PropsWithChildren<Props>;

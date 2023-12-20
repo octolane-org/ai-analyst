@@ -2,6 +2,7 @@ import SiteHeader from "@/components/SiteHeader";
 import { Toaster } from "@/components/Toaster";
 import { configuration } from "@/constants/configs";
 import { NextAuthProvider } from "@/lib/next-auth";
+import SentryBrowserWrapper from "@/lib/sentry/sentry-provider";
 import { cn } from "@/utils/common";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
@@ -22,18 +23,20 @@ export default function RootLayout({
         <PostHogPageview />
       </Suspense>
       <PHProvider>
-        <NextAuthProvider>
-          <body
-            className={cn(
-              "min-h-screen bg-background font-sans antialiased",
-              inter.className,
-            )}
-          >
-            <Toaster />
-            <SiteHeader />
-            {children}
-          </body>
-        </NextAuthProvider>
+        <SentryBrowserWrapper>
+          <NextAuthProvider>
+            <body
+              className={cn(
+                "min-h-screen bg-background font-sans antialiased",
+                inter.className,
+              )}
+            >
+              <Toaster />
+              <SiteHeader />
+              {children}
+            </body>
+          </NextAuthProvider>
+        </SentryBrowserWrapper>
       </PHProvider>
     </html>
   );

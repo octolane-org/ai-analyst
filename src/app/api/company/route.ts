@@ -1,6 +1,7 @@
 import { configuration } from "@/constants/configs";
 import { axios } from "@/lib/axios";
 import { prisma } from "@/lib/prisma";
+import { captureApiException } from "@/lib/sentry/sentry-browser";
 import type {
   CompanyCSVData,
   CompanyEnrichData,
@@ -64,6 +65,11 @@ export async function POST(request: Request) {
         status: error.response.status,
       });
     }
+
+    captureApiException(error, {
+      fingerprint,
+      companyData,
+    });
 
     return NextResponse.json(
       { error: "Couldn't enrich this data" },

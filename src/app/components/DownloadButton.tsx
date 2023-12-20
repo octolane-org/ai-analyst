@@ -45,6 +45,12 @@ export const DownloadButton = () => {
       const hasLimit = await checkLimit();
 
       if (!hasLimit) {
+        posthog.capture(
+          POSTHOG_EVENTS.LIMIT_EXCEEDED,
+          session.status === "authenticated"
+            ? { email: session.data.user?.email }
+            : {},
+        );
         return;
       }
 

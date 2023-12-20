@@ -60,6 +60,7 @@ export const DownloadingData = ({
         console.error(error.response.data);
         toast.error("Something went wrong. Please try again later.");
       }
+
       return false;
     }
   }, [getFingerprint]);
@@ -71,6 +72,12 @@ export const DownloadingData = ({
       const hasLimit = await checkLimit();
 
       if (!hasLimit) {
+        posthog.capture(
+          POSTHOG_EVENTS.LIMIT_EXCEEDED,
+          session.status === "authenticated"
+            ? { email: session.data.user?.email }
+            : {},
+        );
         setDownloading(false);
         clearURLSearchParams();
         return;
