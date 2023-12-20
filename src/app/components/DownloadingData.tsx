@@ -66,72 +66,68 @@ export const DownloadingData = ({
     }
   }, [getFingerprint]);
 
-  const downloadDataAsCSV = useCallback(
-    async (downloadType: EnrichmentType) => {
-      setDownloading(true);
+  const downloadDataAsCSV = useCallback(async () => {
+    setDownloading(true);
 
-      const hasLimit = await checkLimit();
+    const hasLimit = await checkLimit();
 
-      if (!hasLimit) {
-        posthog.capture(
-          POSTHOG_EVENTS.LIMIT_EXCEEDED,
-          session.status === "authenticated"
-            ? { email: session.data.user?.email }
-            : {},
-        );
-        setDownloading(false);
-        clearURLSearchParams();
-        return;
-      }
-
-      jsonToCSV(
-        downloadType === "person"
-          ? PERSON_ENRICHED_CSV_HEADERS
-          : COMPANY_ENRICHED_CSV_HEADERS,
-        downloadType === "person"
-          ? (downloadableData as PersonEnrichData[]).map(
-              person =>
-                `"${person.full_name ?? ""}","${person.email}","${
-                  person.job_title ?? ""
-                }","${person.linkedin_url ?? ""}","${
-                  person.current_company ?? ""
-                }","${person.current_company_domain ?? ""}","${
-                  person.email_verified ?? ""
-                }","${person.seniority ?? ""}","${
-                  person.contact_number ?? ""
-                }"`,
-            )
-          : (downloadableData as CompanyEnrichData[]).map(
-              company =>
-                `"${company.company_name ?? ""}","${company.domain}","${
-                  `https://linkedin.com/${company.linkedin_url}` ?? ""
-                }","${company.employee_size_range ?? ""}","${
-                  company.estimated_annual_revenue ?? ""
-                }","${company.twitter_url ?? ""}","${
-                  company.twitter_followers ?? ""
-                }","${company.primary_location ?? ""}","${
-                  company.founded_at ?? ""
-                }","${company.industry ?? ""}"`,
-            ),
-        `octolane-${downloadType}-enrichment.csv`,
-      );
-
+    if (!hasLimit) {
       posthog.capture(
-        POSTHOG_EVENTS.REGISTER_TO_DOWNLOAD,
+        POSTHOG_EVENTS.LIMIT_EXCEEDED,
         session.status === "authenticated"
           ? { email: session.data.user?.email }
           : {},
       );
-
       setDownloading(false);
       clearURLSearchParams();
-    },
-    [checkLimit, downloadableData, session],
-  );
+      return;
+    }
+
+    jsonToCSV(
+      downloadType === "person"
+        ? PERSON_ENRICHED_CSV_HEADERS
+        : COMPANY_ENRICHED_CSV_HEADERS,
+      downloadType === "person"
+        ? (downloadableData as PersonEnrichData[]).map(
+            person =>
+              `"${person.full_name ?? ""}","${person.email}","${
+                person.job_title ?? ""
+              }","${person.linkedin_url ?? ""}","${
+                person.current_company ?? ""
+              }","${person.current_company_domain ?? ""}","${
+                person.email_verified ?? ""
+              }","${person.seniority ?? ""}","${person.contact_number ?? ""}"`,
+          )
+        : (downloadableData as CompanyEnrichData[]).map(
+            company =>
+              `"${company.company_name ?? ""}","${company.domain}","${
+                `https://linkedin.com/${company.linkedin_url}` ?? ""
+              }","${company.employee_size_range ?? ""}","${
+                company.estimated_annual_revenue ?? ""
+              }","${company.twitter_url ?? ""}","${
+                company.twitter_followers ?? ""
+              }","${company.primary_location ?? ""}","${
+                company.founded_at ?? ""
+              }","${company.industry ?? ""}"`,
+          ),
+      `octolane-${downloadType}-enrichment.csv`,
+    );
+
+    posthog.capture(
+      POSTHOG_EVENTS.REGISTER_TO_DOWNLOAD,
+      session.status === "authenticated"
+        ? { email: session.data.user?.email }
+        : {},
+    );
+
+    setDownloading(false);
+    clearURLSearchParams();
+  }, [downloadType, checkLimit, downloadableData, session]);
 
   useEffect(() => {
-    downloadDataAsCSV(downloadType);
-  }, [downloadType, downloadDataAsCSV]);
+    downloadDataAsCSV();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
