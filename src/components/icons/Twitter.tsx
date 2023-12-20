@@ -1,4 +1,4 @@
-const TwitterIcon = () => {
+const TwitterIcon = ({ className }: { className?: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,6 +10,7 @@ const TwitterIcon = () => {
       viewBox="0 0 24 24"
       enableBackground="new 0 0 24 24"
       xmlSpace="preserve"
+      className={className}
     >
       <g>
         <polygon points="12.153992,10.729553 8.088684,5.041199 5.92041,5.041199 10.956299,12.087097 11.59021,12.97345    15.900635,19.009583 18.068909,19.009583 12.785217,11.615906  " />

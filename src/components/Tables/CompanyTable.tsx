@@ -19,6 +19,8 @@ import { SparklesIcon } from "@heroicons/react/20/solid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Spinner } from "../Spinner";
+import LinkedInIcon from "../icons/LinkedIn";
+import TwitterIcon from "../icons/Twitter";
 
 type CompanyTableProps = {
   rowData: CompanyCSVData[];
@@ -176,10 +178,24 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                   data={row.company_name}
                   isProcessing={isProcessing}
                 />
-                <PersonEnrichedCell
-                  data={row.linkedin_url}
-                  isProcessing={isProcessing}
-                />
+                <TableCell>
+                  <div className="flex items-center gap-2 justify-center">
+                    <a
+                      href={`https://linkedin.com/company/${row.linkedin_url}`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      <LinkedInIcon className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={`https://twitter.com/${row.twitter_url}`}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      <TwitterIcon className="w-5 h-5" />
+                    </a>
+                  </div>
+                </TableCell>
                 <PersonEnrichedCell
                   data={row.employee_size_range}
                   isProcessing={isProcessing}
