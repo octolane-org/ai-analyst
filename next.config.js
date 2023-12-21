@@ -17,8 +17,8 @@ const nextConfig = {
           // fixes mapbox dependencies
           events: false,
           // fixes sentry dependencies
-          process: false
-        }
+          process: false,
+        },
       };
     }
     config.module.exprContextCritical = false; // Workaround to suppress next-i18next warning, see https://github.com/isaachinman/next-i18next/issues/1545
