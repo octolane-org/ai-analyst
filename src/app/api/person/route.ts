@@ -22,6 +22,9 @@ export async function POST(request: Request) {
     );
   }
 
+  // pause for 1 second to prevent abuse
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
   try {
     const { data } = await axios.post<{ data: PersonEnrichData }>(
       "https://enrich.octolane.com/v1/person-by-email",

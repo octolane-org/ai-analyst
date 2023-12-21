@@ -9,8 +9,6 @@ export const convertCSVToJson = <T = Record<string, any>>(
   const headers = lines[0].split(",");
   const result: Record<string, any>[] = [];
 
-  console.log(headers, safeHeaders);
-
   if (
     !headers.some(header =>
       safeHeaders.includes(header.replace(/\\r/g, "").trim()),

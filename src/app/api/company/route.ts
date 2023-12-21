@@ -6,6 +6,7 @@ import type {
   CompanyCSVData,
   CompanyEnrichData,
 } from "@/types/PersonEnrich.type";
+import { getRootDomain } from "@/utils/getRootDomain";
 import { HttpStatusCode, type AxiosError } from "axios";
 import { NextResponse } from "next/server";
 
@@ -22,12 +23,15 @@ export async function POST(request: Request) {
     );
   }
 
+  // pause for 1 second to prevent abuse
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   try {
     const { data } = await axios.post<{
       data: Omit<CompanyEnrichData, "founded_at">;
     }>(
       "https://enrich.octolane.com/v1/company",
-      { domain: companyData.domain },
+      { domain: getRootDomain(companyData.domain) },
       { headers: { "x-api-key": configuration.octolaneAPIKey } },
     );
 

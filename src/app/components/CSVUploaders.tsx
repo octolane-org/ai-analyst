@@ -12,6 +12,7 @@ import type { EnrichmentType } from "@/types/app.type";
 import { convertCSVToJson } from "@/utils/csvToJson";
 import type { ChangeEvent } from "react";
 import { Fragment } from "react";
+import { toast } from "sonner";
 
 export const CSVUploaders = () => {
   const {
@@ -43,8 +44,13 @@ export const CSVUploaders = () => {
           SAFE_PERSON_HEADERS,
           "email",
         );
-        if (!jsonData) {
+        if (jsonData === null) {
           inputEvent.target.value = "";
+        }
+        if (jsonData ? jsonData?.length > 500 : false) {
+          toast.error("You can only upload up to 500 people at a time.");
+          inputEvent.target.value = "";
+          return;
         }
         setPersonCSVData(jsonData || []);
       } else {
@@ -55,6 +61,11 @@ export const CSVUploaders = () => {
         );
         if (!jsonData) {
           inputEvent.target.value = "";
+        }
+        if (jsonData ? jsonData?.length > 500 : false) {
+          toast.error("You can only upload up to 500 people at a time.");
+          inputEvent.target.value = "";
+          return;
         }
         setCompanyCSVData(jsonData || []);
       }

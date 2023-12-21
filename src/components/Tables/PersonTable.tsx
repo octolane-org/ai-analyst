@@ -53,7 +53,7 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
     (data: PersonEnrichData, success: boolean) => {
       setEnrichedData(prev => {
         setProcessingEmails(prev => prev.filter(email => email !== data.email));
-        if (success) {
+        if (success && data.full_name?.trim() !== "") {
           return prev.map(row => {
             return row.email === data.email ? data : row;
           });
@@ -91,7 +91,7 @@ export const PersonTable = ({ rowData, csrfToken }: PersonTableProps) => {
 
   useEffect(() => {
     if (rowData) {
-      const batchSize = 5;
+      const batchSize = 3;
       let index = 0;
 
       const processBatch = async () => {
