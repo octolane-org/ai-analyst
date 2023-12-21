@@ -7,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FINGERPRINT_HEADER } from "@/constants/configs";
 import { useEnrichContext } from "@/contexts/enrich-context";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { axios } from "@/lib/axios";
@@ -16,11 +17,14 @@ import type {
 } from "@/types/PersonEnrich.type";
 import { cn, currencyFormat } from "@/utils/common";
 import { SparklesIcon } from "@heroicons/react/20/solid";
+import type { AxiosError } from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Spinner } from "../Spinner";
 import LinkedInIcon from "../icons/LinkedIn";
 import TwitterIcon from "../icons/Twitter";
+import { Button } from "../ui/button";
 
 type CompanyTableProps = {
   rowData: CompanyCSVData[];
@@ -34,6 +38,8 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
   const [enrichedData, setEnrichedData] = useState<CompanyEnrichData[]>([]);
   const [processingDomains, setProcessingDomains] = useState<string[]>([]);
   const [dataMissingFor, setDataMissingFor] = useState<string[]>([]);
+  const [generating, setGenerating] = useState<string | null>(null);
+  const [generatedContent, setGeneratedContent] = useState<string>("");
 
   const { getFingerprint } = useFingerprint();
 
@@ -117,6 +123,51 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
     }
   }, [getCompanyEnrichedData, rowData]);
 
+  const aiAnalyze = async (domain: string) => {
+    setGeneratedContent("");
+    setGenerating(domain);
+
+    try {
+      const response = await fetch("/api/ai-analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          [FINGERPRINT_HEADER]: await getFingerprint(),
+        },
+        body: JSON.stringify({ domain }),
+      });
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      // This data is a ReadableStream
+      const data = response.body;
+      if (!data) {
+        return;
+      }
+
+      const reader = data.getReader();
+
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+        setGeneratedContent(prev => prev + chunkValue);
+      }
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
+
+    setGenerating(null);
+  };
+
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
       <div className="w-full justify-center flex items-center gap-1">
@@ -129,6 +180,11 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
             : `Found ${enrichedData.length} out of ${rowData.length}`}
         </h3>
       </div>
+      {generatedContent ? (
+        <div>
+          <pre className="text-xs whitespace-pre-wrap">{generatedContent}</pre>
+        </div>
+      ) : null}
       <div className="text-right text-sm mt-8 mb-2 text-zinc-500">
         Scroll right to see more data
       </div>
@@ -136,7 +192,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-2">#</TableHead>
-            <TableHead>Domain</TableHead>
+            <TableHead className="sticky left-0 bg-white">Domain</TableHead>
             <EnrichColumnHeader
               title="Company Name"
               isEnriching={isEnriching}
@@ -163,6 +219,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
               isEnriching={isEnriching}
             />
             <EnrichColumnHeader title="Founded At" isEnriching={isEnriching} />
+            <TableHead className="sticky right-0 bg-white shadow-lg"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -172,11 +229,24 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
               <TableRow
                 key={row.domain}
                 className={cn("transition-all", {
-                  "bg-red-50": dataMissingFor.includes(row.domain),
+                  "group bg-red-50 hover:bg-muted": dataMissingFor.includes(
+                    row.domain,
+                  ),
                 })}
               >
                 <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{row.domain}</TableCell>
+                <TableCell
+                  className={cn(
+                    "sticky left-0 bg-white z-[2] shadow-xl hover:bg-muted",
+                    {
+                      "bg-red-50 group-hover:bg-muted": dataMissingFor.includes(
+                        row.domain,
+                      ),
+                    },
+                  )}
+                >
+                  {row.domain}
+                </TableCell>
                 <PersonEnrichedCell
                   data={row.company_name}
                   isProcessing={isProcessing}
@@ -227,6 +297,21 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                   data={row.founded_at?.toString()}
                   isProcessing={isProcessing}
                 />
+                <TableCell className="sticky right-0 bg-white flex justify-center shadow-xl">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => aiAnalyze(row.domain)}
+                  >
+                    {generating === row.domain ? (
+                      <div className="flex items-center">
+                        <Spinner /> AI Analyze
+                      </div>
+                    ) : (
+                      "AI Analyze"
+                    )}
+                  </Button>
+                </TableCell>
               </TableRow>
             );
           })}

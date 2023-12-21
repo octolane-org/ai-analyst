@@ -77,14 +77,14 @@ export const CSVUploaders = () => {
   return (
     <Fragment>
       {!personCSVData && !companyCSVData ? (
-        <div className="flex space-x-5 pb-5">
-          <ActionCard
+        <div className="flex space-x-5 pb-5 justify-center">
+          {/* <ActionCard
             cardTitle="Enrich People"
             cardDescription="Upload a CSV or Excel of up to 500 people email and enrich their information for free."
             buttonText="Upload CSV"
             type={ENRICHMENT_TYPE.PERSON}
             onDataLoad={handleCSVInputChange}
-          />
+          /> */}
 
           <ActionCard
             cardTitle="Enrich Company"

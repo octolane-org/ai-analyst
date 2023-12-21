@@ -29,6 +29,8 @@ export const configuration = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
+  metaphoreApiKey: process.env.METAPHOR_API_KEY,
+  openaiApiKey: process.env.OPENAI_API_KEY,
 };
 
 export const FINGERPRINT_HEADER = "x-fingerprint";
