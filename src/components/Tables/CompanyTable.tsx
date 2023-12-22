@@ -89,7 +89,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
               "X-CSRF-Token": csrfToken,
               "x-fingerprint": fp,
             },
-            timeout: 10000,
+            timeout: 20000,
           },
         );
         updateEnrichedList(data, true);
