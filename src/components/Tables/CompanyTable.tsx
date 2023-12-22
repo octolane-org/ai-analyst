@@ -1,3 +1,4 @@
+import { DownloadButton } from "@/app/components/DownloadButton";
 import { TypingEffect } from "@/components/TypingEffect";
 import {
   Table,
@@ -178,23 +179,27 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
           </pre>
         </div>
       ) : null}
-      <div className="w-full justify-center flex items-center gap-1">
-        {isEnriching ? <Spinner /> : null}
-        <h3 className="font-semibold leading-none tracking-tight">
+      <div className="w-full flex justify-between items-center mt-8 mb-2 text-zinc-500">
+        <div className="flex items-center gap-1">
           {isEnriching ? (
-            `Analysing ${rowData.length - dataMissingFor.length} out of ${
-              rowData.length
-            }`
+            <div className="flex items-center gap-2">
+              {isEnriching ? <Spinner /> : null}
+              <h3 className="font-semibold leading-none tracking-tight">
+                Analysing {rowData.length - dataMissingFor.length} out of{" "}
+                {rowData.length}
+              </h3>
+            </div>
           ) : (
-            <div className="w-full justify-center flex items-center gap-1">
-              <Sparkles className="w-4" /> Found {enrichedData.length} out of{" "}
-              {rowData.length}
+            <div className="flex items-center gap-2 justify-start">
+              <DownloadButton />
+              <Sparkles className="w-4" />
+              <h3 className="font-semibold leading-none tracking-tight">
+                Found {enrichedData.length} out of {rowData.length}
+              </h3>
             </div>
           )}
-        </h3>
-      </div>
-      <div className="text-right text-sm mt-8 mb-2 text-zinc-500">
-        Scroll right to see more data
+        </div>
+        <p className="text-sm text-zinc-600">Scroll right to see more data</p>
       </div>
       <Table className="text-justify overflow-auto w-max">
         <TableHeader>
@@ -310,14 +315,10 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                     variant="default"
                     size="sm"
                     onClick={() => aiAnalyze(row.domain)}
+                    className="flex items-center gap-1"
                   >
-                    {generating === row.domain ? (
-                      <div className="flex items-center">
-                        <Spinner /> AI Analyze
-                      </div>
-                    ) : (
-                      "AI Analyze"
-                    )}
+                    {generating === row.domain ? <Spinner /> : null}
+                    AI Analyze
                   </Button>
                 </TableCell>
               </TableRow>

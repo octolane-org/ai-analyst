@@ -14,7 +14,6 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 import { CSVUploaders } from "./components/CSVUploaders";
-import { DownloadButton } from "./components/DownloadButton";
 import { DownloadingData } from "./components/DownloadingData";
 
 type SearchParams = {
@@ -175,7 +174,11 @@ export default async function Home({
                 />
               ) : (
                 <Fragment>
-                  <DownloadButton />
+                  {/* <span className={"text-xs text-gray-500 dark:text-gray-400"}>
+                    {session.status === "unauthenticated" && showDownloadButton
+                      ? "Work email required!"
+                      : "No credit card required. Work email required!"}
+                  </span> */}
                   <EnrichTable csrfToken={csrfToken} />
                   <CSVUploaders />
                 </Fragment>

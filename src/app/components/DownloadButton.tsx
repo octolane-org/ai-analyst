@@ -123,18 +123,13 @@ export const DownloadButton = () => {
   };
 
   return (
-    <div className="pb-4 flex flex-col items-center gap-1">
+    <div className="flex flex-col items-center gap-1">
       {showDownloadButton ? (
-        <Button variant="cta" size="lg" onClick={onDownloadClick}>
+        <Button variant="secondary" size="sm" onClick={onDownloadClick}>
           <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
-          Download
+          Export
         </Button>
       ) : null}
-      <span className={"text-xs text-gray-500 dark:text-gray-400"}>
-        {session.status === "unauthenticated" && showDownloadButton
-          ? "Work email required!"
-          : "No credit card required. Work email required!"}
-      </span>
 
       <LimitExceedDialog
         open={openDialog}
