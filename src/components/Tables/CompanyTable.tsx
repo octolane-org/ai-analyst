@@ -247,7 +247,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                   ),
                 })}
               >
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell className="font-medium">{index + 1}.</TableCell>
                 <TableCell
                   className={cn(
                     "sticky left-0 bg-white z-[2] shadow-xl hover:bg-muted",
