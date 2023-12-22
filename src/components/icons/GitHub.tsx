@@ -3,7 +3,7 @@ const GitHubIcon = () => {
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className="h-6 w-6 fill-slate-900"
+      className="h-5 w-5 fill-slate-900"
     >
       <path
         fillRule="evenodd"

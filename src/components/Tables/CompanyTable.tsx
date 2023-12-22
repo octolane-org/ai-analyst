@@ -184,18 +184,18 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
           {isEnriching ? (
             <div className="flex items-center gap-2">
               {isEnriching ? <Spinner /> : null}
-              <h3 className="font-semibold leading-none tracking-tight">
+              <p className="font-semibold leading-none tracking-tight text-sm">
                 Analysing {rowData.length - dataMissingFor.length} out of{" "}
                 {rowData.length}
-              </h3>
+              </p>
             </div>
           ) : (
             <div className="flex items-center gap-2 justify-start">
               <DownloadButton />
               <Sparkles className="w-4" />
-              <h3 className="font-semibold leading-none tracking-tight">
+              <p className="font-semibold leading-none tracking-tight text-sm">
                 Found {enrichedData.length} out of {rowData.length}
-              </h3>
+              </p>
             </div>
           )}
         </div>

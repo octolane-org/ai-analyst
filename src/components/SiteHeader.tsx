@@ -33,7 +33,7 @@ const SiteHeader = () => {
             </h1>
           </Link>
 
-          <div className="flex-1 flex items-center justify-end gap-2">
+          <div className="flex-1 flex items-center justify-end gap-3">
             <a
               href="https://github.com/octolane-org/csv-to-enrich-app"
               target="_blank"
@@ -41,11 +41,11 @@ const SiteHeader = () => {
               <GitHubIcon />
             </a>
             <a href="https://twitter.com/octolane_app" target="_blank">
-              <TwitterIcon />
+              <TwitterIcon className="h-5 w-5" />
             </a>
 
             <a
-              className="flex items-center justify-end space-x-4"
+              className="flex items-center justify-end"
               href={CALENDAR_LINK}
               target="_blank"
               onClick={() => {
@@ -61,11 +61,7 @@ const SiteHeader = () => {
             </a>
 
             {session.status === "authenticated" ? (
-              <Button
-                className="ml-5"
-                variant="outline"
-                onClick={() => signOut()}
-              >
+              <Button variant="outline" onClick={() => signOut()}>
                 Logout
               </Button>
             ) : null}

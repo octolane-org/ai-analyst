@@ -125,7 +125,7 @@ export const DownloadButton = () => {
   return (
     <div className="flex flex-col items-center gap-1">
       {showDownloadButton ? (
-        <Button variant="secondary" size="sm" onClick={onDownloadClick}>
+        <Button variant="secondary" size="xs" onClick={onDownloadClick}>
           <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
           Export
         </Button>
