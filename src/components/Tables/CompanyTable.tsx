@@ -18,6 +18,7 @@ import type {
 import { cn, currencyFormat } from "@/utils/common";
 import { SparklesIcon } from "@heroicons/react/20/solid";
 import type { AxiosError } from "axios";
+import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -170,21 +171,28 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
 
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
+      {generatedContent ? (
+        <div>
+          <pre className="text-left text-xs whitespace-pre-wrap">
+            {generatedContent}
+          </pre>
+        </div>
+      ) : null}
       <div className="w-full justify-center flex items-center gap-1">
         {isEnriching ? <Spinner /> : null}
         <h3 className="font-semibold leading-none tracking-tight">
-          {isEnriching
-            ? `Analysing ${rowData.length - dataMissingFor.length} out of ${
-                rowData.length
-              }`
-            : `Found ${enrichedData.length} out of ${rowData.length}`}
+          {isEnriching ? (
+            `Analysing ${rowData.length - dataMissingFor.length} out of ${
+              rowData.length
+            }`
+          ) : (
+            <div className="w-full justify-center flex items-center gap-1">
+              <Sparkles className="w-4" /> Found {enrichedData.length} out of{" "}
+              {rowData.length}
+            </div>
+          )}
         </h3>
       </div>
-      {generatedContent ? (
-        <div>
-          <pre className="text-xs whitespace-pre-wrap">{generatedContent}</pre>
-        </div>
-      ) : null}
       <div className="text-right text-sm mt-8 mb-2 text-zinc-500">
         Scroll right to see more data
       </div>
