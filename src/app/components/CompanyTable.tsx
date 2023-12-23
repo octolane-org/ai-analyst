@@ -1,3 +1,5 @@
+"use client";
+
 import { DownloadButton } from "@/app/components/DownloadButton";
 import { TypingEffect } from "@/components/TypingEffect";
 import {
@@ -23,10 +25,12 @@ import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Spinner } from "../Spinner";
-import LinkedInIcon from "../icons/LinkedIn";
-import TwitterIcon from "../icons/Twitter";
-import { Button } from "../ui/button";
+import { Spinner } from "../../components/Spinner";
+import LinkedInIcon from "../../components/icons/LinkedIn";
+import TwitterIcon from "../../components/icons/Twitter";
+import { Button } from "../../components/ui/button";
+
+import AIGeneretedContent from "./AIGeneretedContent";
 
 type CompanyTableProps = {
   csrfToken: string | null;
@@ -169,15 +173,11 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
     setGenerating(null);
   };
 
+  if (!companyCSVData) return null;
+
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
-      {generatedContent ? (
-        <div>
-          <pre className="text-left text-xs whitespace-pre-wrap">
-            {generatedContent}
-          </pre>
-        </div>
-      ) : null}
+      <AIGeneretedContent content={generatedContent} />
       <div className="w-full flex justify-between items-center mt-8 mb-2 text-zinc-500">
         <div className="flex items-center gap-1">
           {isEnriching && companyCSVData ? (

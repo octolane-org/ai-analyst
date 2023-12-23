@@ -3,7 +3,6 @@
 import type {
   CompanyCSVData,
   CompanyEnrichData,
-  PersonCSVData,
   PersonEnrichData,
 } from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
@@ -12,9 +11,6 @@ import { createContext, useContext, useState } from "react";
 type EnrichContextType = {
   enrichmentType: EnrichmentType | null;
   setEnrichmentType: (type: EnrichmentType) => void;
-
-  personCSVData: PersonCSVData[] | null;
-  setPersonCSVData: (data: PersonCSVData[] | null) => void;
 
   companyCSVData: CompanyCSVData[] | null;
   setCompanyCSVData: (data: CompanyCSVData[] | null) => void;
@@ -32,9 +28,6 @@ type EnrichContextType = {
 export const EnrichContext = createContext<EnrichContextType>({
   enrichmentType: null,
   setEnrichmentType: (type: EnrichmentType) => {},
-
-  personCSVData: null,
-  setPersonCSVData: (data: PersonCSVData[] | null) => {},
 
   companyCSVData: null,
   setCompanyCSVData: (data: CompanyCSVData[] | null) => {},
@@ -66,9 +59,6 @@ export const EnrichContextProvider = ({
   const [downloadableCompanyData, setDownloadableCompanyData] = useState<
     CompanyEnrichData[]
   >([]);
-  const [personCSVData, setPersonCSVData] = useState<PersonCSVData[] | null>(
-    null,
-  );
   const [companyCSVData, setCompanyCSVData] = useState<CompanyCSVData[] | null>(
     null,
   );
@@ -86,8 +76,6 @@ export const EnrichContextProvider = ({
         downloadableCompanyData,
         setDownloadableCompanyData,
 
-        personCSVData,
-        setPersonCSVData,
         companyCSVData,
         setCompanyCSVData,
       }}

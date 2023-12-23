@@ -1,5 +1,4 @@
 import Container from "@/components/Container";
-import { CompanyTable } from "@/components/Tables/CompanyTable";
 import { ENRICHMENT_TYPE } from "@/constants/enrich.constants";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
@@ -14,6 +13,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 import { CSVUploaders } from "./components/CSVUploaders";
+import { CompanyTable } from "./components/CompanyTable";
 import { DownloadingData } from "./components/DownloadingData";
 
 type SearchParams = {
