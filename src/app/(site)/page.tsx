@@ -1,12 +1,8 @@
 import Container from "@/components/Container";
-import { ENRICHMENT_TYPE } from "@/constants/enrich.constants";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
 import { captureApiException } from "@/lib/sentry/sentry-browser";
-import type {
-  CompanyEnrichData,
-  PersonEnrichData,
-} from "@/types/PersonEnrich.type";
+import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -27,54 +23,6 @@ export default async function Home({
   searchParams: SearchParams;
 }) {
   const csrfToken = headers().get("X-CSRF-Token");
-
-  const getDownloadablePersonData = async () => {
-    if (!searchParams.fp || !searchParams.action) return;
-
-    try {
-      const persons = await prisma.personForFingerprint.findMany({
-        where: {
-          fingerprint: searchParams.fp,
-        },
-        select: {
-          person: {
-            select: {
-              full_name: true,
-              email: true,
-              job_title: true,
-              linkedin_url: true,
-              current_company: true,
-              current_company_domain: true,
-              email_verified: true,
-              seniority: true,
-              contact_number: true,
-            },
-          },
-        },
-      });
-
-      return persons.map(
-        ({ person }): PersonEnrichData => ({
-          full_name: person.full_name ?? "",
-          email: person.email,
-          job_title: person.job_title ?? "",
-          linkedin_url: person.linkedin_url ?? "",
-          current_company: person.current_company ?? "",
-          current_company_domain: person.current_company_domain ?? "",
-          email_verified: person.email_verified ?? false,
-          seniority: person.seniority ?? "",
-          contact_number: person.contact_number ?? "",
-        }),
-      );
-    } catch (error) {
-      console.error(error);
-      captureApiException(error, {
-        context: "getDownloadablePersonData",
-        searchParams,
-      });
-      return [];
-    }
-  };
 
   const getDownloadableCompanyData = async () => {
     if (!searchParams.fp || !searchParams.action) return;
@@ -127,12 +75,7 @@ export default async function Home({
     }
   };
 
-  const downloadableData =
-    searchParams.action === ENRICHMENT_TYPE.PERSON
-      ? await getDownloadablePersonData()
-      : searchParams.action === ENRICHMENT_TYPE.COMPANY
-        ? await getDownloadableCompanyData()
-        : [];
+  const downloadableData = await getDownloadableCompanyData();
 
   return (
     <EnrichContextProvider>

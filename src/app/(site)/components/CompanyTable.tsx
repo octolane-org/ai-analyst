@@ -1,6 +1,6 @@
 "use client";
 
-import { DownloadButton } from "@/app/components/DownloadButton";
+import { DownloadButton } from "@/app/(site)/components/DownloadButton";
 import { TypingEffect } from "@/components/TypingEffect";
 import {
   Table,
@@ -25,10 +25,10 @@ import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Spinner } from "../../components/Spinner";
-import LinkedInIcon from "../../components/icons/LinkedIn";
-import TwitterIcon from "../../components/icons/Twitter";
-import { Button } from "../../components/ui/button";
+import { Spinner } from "../../../components/Spinner";
+import LinkedInIcon from "../../../components/icons/LinkedIn";
+import TwitterIcon from "../../../components/icons/Twitter";
+import { Button } from "../../../components/ui/button";
 
 import AIGeneretedContent from "./AIGeneretedContent";
 
