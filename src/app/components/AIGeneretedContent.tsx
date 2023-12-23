@@ -1,6 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/utils/common";
+import { Copy } from "lucide-react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 
@@ -11,6 +15,8 @@ const AIGeneretedContent = ({
   content: string;
   isGenerating: boolean;
 }) => {
+  const [textSize, setTextSize] = useState<"text-sm" | "text-md">("text-sm");
+
   if (content.trim().length < 1) return null;
 
   const copyAiContent = () => {
@@ -55,17 +61,34 @@ const AIGeneretedContent = ({
             );
           },
         }}
-        className="whitespace-normal leading-7 text-slate-700 text-left"
+        className={cn(
+          "whitespace-normal leading-7 text-slate-700 text-left transition-all",
+          {
+            "text-sm": textSize === "text-sm",
+            "text-md": textSize === "text-md",
+          },
+        )}
       >
         {content}
       </ReactMarkdown>
-      <div>
+      <div className="flex items-center gap-2">
+        <Tabs value={textSize}>
+          <TabsList>
+            <TabsTrigger value="text-sm" onClick={() => setTextSize("text-sm")}>
+              a
+            </TabsTrigger>
+            <TabsTrigger value="text-md" onClick={() => setTextSize("text-md")}>
+              A
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
         <Button
           size="xs"
           variant="secondary"
           disabled={isGenerating}
           onClick={copyAiContent}
         >
+          <Copy className="h-3 w-3 mr-1" />
           Copy AI Content
         </Button>
       </div>

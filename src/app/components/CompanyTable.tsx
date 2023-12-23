@@ -314,9 +314,14 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
                 />
                 <TableCell className="sticky right-0 bg-white flex justify-center shadow-xl">
                   <Button
-                    variant="default"
+                    variant={
+                      generating && generating !== row.domain
+                        ? "secondary"
+                        : "default"
+                    }
                     size="sm"
                     onClick={() => aiAnalyze(row.domain)}
+                    disabled={generating !== null}
                     className="flex items-center gap-1"
                   >
                     {generating === row.domain ? <Spinner /> : null}
