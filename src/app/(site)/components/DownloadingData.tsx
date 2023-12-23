@@ -1,21 +1,17 @@
 "use client";
 
 import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
-import { CALENDAR_LINK, FINGERPRINT_HEADER } from "@/constants/configs";
-import {
-  COMPANY_ENRICHED_CSV_HEADERS,
-  PERSON_ENRICHED_CSV_HEADERS,
-} from "@/constants/enrich.constants";
+import { CALENDAR_LINK } from "@/constants/configs";
+import { COMPANY_ENRICHED_CSV_HEADERS } from "@/constants/enrich.constants";
+import { getEnrichmentLimitByFingerprint } from "@/core/user/queries";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
-import { axios } from "@/lib/axios";
 import type {
   CompanyEnrichData,
   PersonEnrichData,
 } from "@/types/PersonEnrich.type";
-import type { APILimitResponse } from "@/types/api.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { clearURLSearchParams } from "@/utils/common";
-import { jsonToCSV } from "@/utils/jsonToCSV";
+import { downloadCSV } from "@/utils/jsonToCSV";
 import type { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import posthog from "posthog-js";
@@ -26,7 +22,7 @@ import LimitExceedDialog from "./LimitExceedDialog";
 
 export const DownloadingData = ({
   downloadableData,
-  downloadType = "person",
+  downloadType = "company",
 }: {
   downloadableData: PersonEnrichData[] | CompanyEnrichData[];
   downloadType: EnrichmentType;
@@ -41,9 +37,7 @@ export const DownloadingData = ({
   const checkLimit = useCallback(async () => {
     const fp = await getFingerprint();
     try {
-      const { data } = await axios.get<APILimitResponse>("/api/limit", {
-        headers: { [FINGERPRINT_HEADER]: fp },
-      });
+      const { data } = await getEnrichmentLimitByFingerprint(fp);
 
       if (data.totalCompanyEnriched >= data.userEnrichmentLimit) {
         setOpenDialog(true);
@@ -79,33 +73,20 @@ export const DownloadingData = ({
       return;
     }
 
-    jsonToCSV(
-      downloadType === "person"
-        ? PERSON_ENRICHED_CSV_HEADERS
-        : COMPANY_ENRICHED_CSV_HEADERS,
-      downloadType === "person"
-        ? (downloadableData as PersonEnrichData[]).map(
-            person =>
-              `"${person.full_name ?? ""}","${person.email}","${
-                person.job_title ?? ""
-              }","${person.linkedin_url ?? ""}","${
-                person.current_company ?? ""
-              }","${person.current_company_domain ?? ""}","${
-                person.email_verified ?? ""
-              }","${person.seniority ?? ""}","${person.contact_number ?? ""}"`,
-          )
-        : (downloadableData as CompanyEnrichData[]).map(
-            company =>
-              `"${company.company_name ?? ""}","${company.domain}","${
-                `https://linkedin.com/${company.linkedin_url}` ?? ""
-              }","${company.employee_size_range ?? ""}","${
-                company.estimated_annual_revenue ?? ""
-              }","${company.twitter_url ?? ""}","${
-                company.twitter_followers ?? ""
-              }","${company.primary_location ?? ""}","${
-                company.founded_at ?? ""
-              }","${company.industry ?? ""}"`,
-          ),
+    downloadCSV(
+      COMPANY_ENRICHED_CSV_HEADERS,
+      (downloadableData as CompanyEnrichData[]).map(
+        company =>
+          `"${company.company_name ?? ""}","${company.domain}","${
+            `https://linkedin.com/${company.linkedin_url}` ?? ""
+          }","${company.employee_size_range ?? ""}","${
+            company.estimated_annual_revenue ?? ""
+          }","${company.twitter_url ?? ""}","${
+            company.twitter_followers ?? ""
+          }","${company.primary_location ?? ""}","${
+            company.founded_at ?? ""
+          }","${company.industry ?? ""}"`,
+      ),
       `octolane-${downloadType}-enrichment.csv`,
     );
 
@@ -134,9 +115,9 @@ export const DownloadingData = ({
       <p>
         Email{" "}
         <a
+          className="text-blue-600"
           href="mailto:one@octolane.com"
           target="_blank"
-          className="text-blue-600"
         >
           one@octolane.com
         </a>{" "}
