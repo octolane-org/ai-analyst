@@ -3,12 +3,10 @@
 import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import { CALENDAR_LINK } from "@/constants/configs";
 import { COMPANY_ENRICHED_CSV_HEADERS } from "@/constants/enrich.constants";
+import { convertCompanyDataForCSV } from "@/core/company/actions";
 import { getEnrichmentLimitByFingerprint } from "@/core/user/queries";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
-import type {
-  CompanyEnrichData,
-  PersonEnrichData,
-} from "@/types/PersonEnrich.type";
+import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { clearURLSearchParams } from "@/utils/common";
 import { downloadCSV } from "@/utils/jsonToCSV";
@@ -24,7 +22,7 @@ export const DownloadingData = ({
   downloadableData,
   downloadType = "company",
 }: {
-  downloadableData: PersonEnrichData[] | CompanyEnrichData[];
+  downloadableData: CompanyEnrichData[];
   downloadType: EnrichmentType;
 }) => {
   const [downloading, setDownloading] = useState(false);
@@ -75,18 +73,7 @@ export const DownloadingData = ({
 
     downloadCSV(
       COMPANY_ENRICHED_CSV_HEADERS,
-      (downloadableData as CompanyEnrichData[]).map(
-        company =>
-          `"${company.company_name ?? ""}","${company.domain}","${
-            `https://linkedin.com/${company.linkedin_url}` ?? ""
-          }","${company.employee_size_range ?? ""}","${
-            company.estimated_annual_revenue ?? ""
-          }","${company.twitter_url ?? ""}","${
-            company.twitter_followers ?? ""
-          }","${company.primary_location ?? ""}","${
-            company.founded_at ?? ""
-          }","${company.industry ?? ""}"`,
-      ),
+      convertCompanyDataForCSV(downloadableData),
       `octolane-${downloadType}-enrichment.csv`,
     );
 
