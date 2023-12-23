@@ -52,3 +52,9 @@ export const getCompanyDataByFingerprint = async (fingerprint: string) => {
     return [];
   }
 };
+
+export const getCompanyEnrichmentCountByFingerprint = (fingerprint: string) => {
+  return prisma.companyForFingerprint.count({
+    where: { fingerprint },
+  });
+};
