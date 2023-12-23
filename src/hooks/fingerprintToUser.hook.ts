@@ -1,9 +1,12 @@
-import { axios } from "@/lib/axios";
+import { mapUserWithFingerprint } from "@/core/user/mutations";
 import { clearURLSearchParams } from "@/utils/common";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 
+/**
+ * This hook is used to map the fingerprint to the user.
+ */
 export const useFingerprintToUserMap = () => {
   // Get the fingerprint from the URL params as "fp"
   const searchParams = useSearchParams();
@@ -11,15 +14,7 @@ export const useFingerprintToUserMap = () => {
 
   const session = useSession();
 
-  const mapUserWithFingerprint = useCallback(
-    async (email: string, fp: string) => {
-      await axios.post("/api/user", {
-        email,
-        fingerprint: fp,
-      });
-    },
-    [],
-  );
+  const mappedUser = useCallback(mapUserWithFingerprint, []);
 
   useEffect(() => {
     if (
@@ -30,5 +25,5 @@ export const useFingerprintToUserMap = () => {
       mapUserWithFingerprint(session.data.user.email as string, fingerprint);
     }
     clearURLSearchParams();
-  }, [fingerprint, session, mapUserWithFingerprint]);
+  }, [fingerprint, session, mappedUser]);
 };

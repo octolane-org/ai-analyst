@@ -9,7 +9,7 @@ import { useFingerprint } from "@/hooks/fingerprint.hook";
 import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import type { EnrichmentType } from "@/types/app.type";
 import { clearURLSearchParams } from "@/utils/common";
-import { downloadCSV } from "@/utils/jsonToCSV";
+import { downloadCSV } from "@/utils/downloadCSV";
 import type { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import posthog from "posthog-js";

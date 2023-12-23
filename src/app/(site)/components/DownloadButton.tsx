@@ -8,7 +8,7 @@ import { convertCompanyDataForCSV } from "@/core/company/actions";
 import { getEnrichmentLimitByFingerprint } from "@/core/user/queries";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { useFingerprintToUserMap } from "@/hooks/fingerprintToUser.hook";
-import { downloadCSV } from "@/utils/jsonToCSV";
+import { downloadCSV } from "@/utils/downloadCSV";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
