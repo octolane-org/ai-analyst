@@ -34,5 +34,6 @@ export const configuration = {
 };
 
 export const FINGERPRINT_HEADER = "x-fingerprint";
+export const X_CSRF_TOKEN_HEADER = "X-CSRF-Token";
 
 export const CALENDAR_LINK = "https://cal.com/octolane/20min";

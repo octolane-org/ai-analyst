@@ -1,9 +1,10 @@
 import Container from "@/components/Container";
+import { X_CSRF_TOKEN_HEADER } from "@/constants/configs";
+import { ENRICHMENT_TYPE } from "@/constants/enrich.constants";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
-import { prisma } from "@/lib/prisma";
-import { captureApiException } from "@/lib/sentry/sentry-browser";
-import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
+import { getCompanyDataByFingerprint } from "@/core/company/queries";
 import type { EnrichmentType } from "@/types/app.type";
+import type { ServerPageProps } from "@/types/common.type";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Fragment } from "react";
@@ -19,63 +20,13 @@ type SearchParams = {
 
 export default async function Home({
   searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const csrfToken = headers().get("X-CSRF-Token");
+}: ServerPageProps<any, SearchParams>) {
+  const csrfToken = headers().get(X_CSRF_TOKEN_HEADER);
 
-  const getDownloadableCompanyData = async () => {
-    if (!searchParams.fp || !searchParams.action) return;
-
-    try {
-      const company = await prisma.companyForFingerprint.findMany({
-        where: {
-          fingerprint: searchParams.fp,
-        },
-        select: {
-          company: {
-            select: {
-              company_name: true,
-              domain: true,
-              linkedin_url: true,
-              employee_size_range: true,
-              estimated_annual_revenue: true,
-              twitter_url: true,
-              twitter_followers: true,
-              primary_location: true,
-              founded_at: true,
-              industry: true,
-            },
-          },
-        },
-      });
-
-      return company.map(
-        ({ company }): CompanyEnrichData => ({
-          company_name: company.company_name ?? "",
-          domain: company.domain ?? "",
-          linkedin_url: company.linkedin_url ?? "",
-          employee_size_range: company.employee_size_range ?? "",
-          estimated_annual_revenue: company.estimated_annual_revenue ?? "",
-          twitter_url: company.twitter_url ?? "",
-          twitter_followers: company.twitter_followers ?? "",
-          primary_location: company.primary_location ?? "",
-          founded_at: company.founded_at ?? "",
-          industry: company.industry ?? "",
-          // tags: company.tags ? JSON.parse(company.tags as string) : "",
-        }),
-      );
-    } catch (error) {
-      console.error(error);
-      captureApiException(error, {
-        context: "getDownloadableCompanyData",
-        searchParams,
-      });
-      return [];
-    }
-  };
-
-  const downloadableData = await getDownloadableCompanyData();
+  const downloadableData =
+    searchParams.action === ENRICHMENT_TYPE.COMPANY
+      ? await getCompanyDataByFingerprint(searchParams.fp)
+      : null;
 
   return (
     <EnrichContextProvider>
@@ -100,7 +51,7 @@ export default async function Home({
               <div className="mb-3">
                 <p className=" text-xl  font-sans">
                   Powered by
-                  <Link href="https://metaphor.systems/">
+                  <Link href="https://metaphor.systems" target="_blank">
                     {" "}
                     <span className="text-[#6e44ff] text-lg font-light font-sans">
                       {" "}
@@ -117,11 +68,9 @@ export default async function Home({
                 />
               ) : (
                 <Fragment>
-                  {/* <span className={"text-xs text-gray-500 dark:text-gray-400"}>
-                    {session.status === "unauthenticated" && showDownloadButton
-                      ? "Work email required!"
-                      : "No credit card required. Work email required!"}
-                  </span> */}
+                  <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+                    No credit card required. Work email required!
+                  </p>
                   <CompanyTable csrfToken={csrfToken} />
                   <CSVUploaders />
                 </Fragment>
