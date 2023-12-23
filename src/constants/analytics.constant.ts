@@ -1,5 +1,4 @@
 export const POSTHOG_EVENTS = {
-  ENRICH_PERSON: "enrich_person",
   ENRICH_COMPANY: "enrich_company",
   TALK_TO_FOUNDERS: {
     NAVBAR: "talk_to_founders:navbar",

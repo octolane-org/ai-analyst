@@ -1,5 +1,6 @@
 import { FINGERPRINT_HEADER } from "@/constants/configs";
-import { prisma } from "@/lib/prisma";
+import { getCompanyEnrichmentCountByFingerprint } from "@/core/company/queries";
+import { getUserByEmail } from "@/core/user/queries";
 import { captureApiException } from "@/lib/sentry/sentry-browser";
 import type { APILimitResponse } from "@/types/api.type";
 import { HttpStatusCode } from "axios";
@@ -25,25 +26,15 @@ export async function GET(request: Request, response: Response) {
     let enrichmentLimit = 500;
 
     if (email) {
-      const user = await prisma.user.findFirst({
-        where: { email },
-        select: { fingerprint: true, enrichment_limit: true },
-      });
+      const user = await getUserByEmail(email);
       fingerprint = user?.fingerprint || headerFingerprint;
       enrichmentLimit = user?.enrichment_limit || 500;
     }
 
-    const [totalPersonEnriched, totalCompanyEnriched] = await Promise.all([
-      prisma.personForFingerprint.count({
-        where: { fingerprint },
-      }),
-      prisma.companyForFingerprint.count({
-        where: { fingerprint },
-      }),
-    ]);
+    const totalCompanyEnriched =
+      await getCompanyEnrichmentCountByFingerprint(fingerprint);
 
     const result: APILimitResponse = {
-      totalPersonEnriched,
       totalCompanyEnriched,
       userFingerprint: fingerprint,
       userEnrichmentLimit: enrichmentLimit,

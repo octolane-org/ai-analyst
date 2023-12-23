@@ -2,17 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
-import { FINGERPRINT_HEADER } from "@/constants/configs";
-import {
-  COMPANY_ENRICHED_CSV_HEADERS,
-  PERSON_ENRICHED_CSV_HEADERS,
-} from "@/constants/enrich.constants";
+import { COMPANY_ENRICHED_CSV_HEADERS } from "@/constants/enrich.constants";
 import { useEnrichContext } from "@/contexts/enrich-context";
+import { convertCompanyDataForCSV } from "@/core/company/actions";
+import { getEnrichmentLimitByFingerprint } from "@/core/user/queries";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
 import { useFingerprintToUserMap } from "@/hooks/fingerprintToUser.hook";
-import { axios } from "@/lib/axios";
-import type { APILimitResponse } from "@/types/api.type";
-import { jsonToCSV } from "@/utils/jsonToCSV";
+import { downloadCSV } from "@/utils/downloadCSV";
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import type { AxiosError } from "axios";
 import { signIn, useSession } from "next-auth/react";
@@ -27,12 +23,8 @@ export const DownloadButton = () => {
   const [userEnrichLimit, setUserEnrichLimit] = useState(500);
 
   useFingerprintToUserMap();
-  const {
-    showDownloadButton,
-    enrichmentType,
-    downloadablePersonData,
-    downloadableCompanyData,
-  } = useEnrichContext();
+  const { showDownloadButton, enrichmentType, downloadableCompanyData } =
+    useEnrichContext();
   const session = useSession();
   const { getFingerprint } = useFingerprint();
 
@@ -55,35 +47,9 @@ export const DownloadButton = () => {
         return;
       }
 
-      jsonToCSV(
-        enrichmentType === "person"
-          ? PERSON_ENRICHED_CSV_HEADERS
-          : COMPANY_ENRICHED_CSV_HEADERS,
-        enrichmentType === "person"
-          ? downloadablePersonData.map(
-              person =>
-                `"${person.full_name ?? ""}","${person.email}","${
-                  person.job_title ?? ""
-                }","${person.linkedin_url ?? ""}","${
-                  person.current_company ?? ""
-                }","${person.current_company_domain ?? ""}","${
-                  person.email_verified ?? ""
-                }","${person.seniority ?? ""}","${
-                  person.contact_number ?? ""
-                }"`,
-            )
-          : downloadableCompanyData.map(
-              company =>
-                `"${company.company_name ?? ""}","${company.domain}","${
-                  `https://linkedin.com/${company.linkedin_url}` ?? ""
-                }","${company.employee_size_range ?? ""}","${
-                  company.estimated_annual_revenue ?? ""
-                }","${company.twitter_url ?? ""}","${
-                  company.twitter_followers ?? ""
-                }","${company.primary_location ?? ""}","${
-                  company.founded_at ?? ""
-                }","${company.industry ?? ""}"`,
-            ),
+      downloadCSV(
+        COMPANY_ENRICHED_CSV_HEADERS,
+        convertCompanyDataForCSV(downloadableCompanyData),
         `octolane-${enrichmentType}-enrichment.csv`,
       );
 
@@ -99,14 +65,9 @@ export const DownloadButton = () => {
   const checkLimit = async () => {
     const fp = await getFingerprint();
     try {
-      const { data } = await axios.get<APILimitResponse>("/api/limit", {
-        headers: { [FINGERPRINT_HEADER]: fp },
-      });
+      const { data } = await getEnrichmentLimitByFingerprint(fp);
 
-      if (
-        data.totalCompanyEnriched + data.totalPersonEnriched >=
-        data.userEnrichmentLimit
-      ) {
+      if (data.totalCompanyEnriched >= data.userEnrichmentLimit) {
         setOpenDialog(true);
         setUserEnrichLimit(data.userEnrichmentLimit);
         return false;

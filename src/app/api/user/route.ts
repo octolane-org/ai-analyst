@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { updateUserFingerprint } from "@/core/user/mutations";
 import { captureApiException } from "@/lib/sentry/sentry-browser";
 import { HttpStatusCode } from "axios";
 import { NextResponse } from "next/server";
@@ -17,14 +17,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await prisma.user.update({
-      where: {
-        email: userData.email,
-      },
-      data: {
-        fingerprint: userData.fingerprint,
-      },
-    });
+    await updateUserFingerprint(userData.email, userData.fingerprint);
 
     return Response.json({ message: "User mapped" });
   } catch (err) {

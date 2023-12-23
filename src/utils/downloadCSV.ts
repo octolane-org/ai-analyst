@@ -1,4 +1,13 @@
-export const jsonToCSV = (
+/**
+ * Download CSV file from data
+ * @param headers - Headers of the CSV
+ * @param data - Rows of the CSV
+ * @param filename - Filename of the CSV to be downloaded
+ * @example
+ * // Download CSV file
+ * downloadCSV(["Name", "Age"], ["One,23", "Rafi,24"], "octolane-founders.csv");
+ */
+export const downloadCSV = (
   headers: string[],
   data: string[],
   filename: string,
@@ -6,8 +15,6 @@ export const jsonToCSV = (
   const csvRows = [headers, ...data];
 
   const csvContent = csvRows.join("\n").replace(/(^\[)|(\]$)/gm, "");
-
-  console.log(csvContent);
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);

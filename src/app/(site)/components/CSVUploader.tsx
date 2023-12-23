@@ -20,10 +20,9 @@ import type { ChangeEvent } from "react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-export const CSVUploaders = () => {
+const CSVUploader = () => {
   const {
     setShowDownloadButton,
-    personCSVData,
     companyCSVData,
     setCompanyCSVData,
     setEnrichmentType,
@@ -86,7 +85,7 @@ export const CSVUploaders = () => {
 
   return (
     <Fragment>
-      {!personCSVData && !companyCSVData ? (
+      {!companyCSVData ? (
         <div className="flex space-x-5 pb-5 justify-center">
           <Card className={cn("w-[380px]")}>
             <input
@@ -115,3 +114,5 @@ export const CSVUploaders = () => {
     </Fragment>
   );
 };
+
+export default CSVUploader;

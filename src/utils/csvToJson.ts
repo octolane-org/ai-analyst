@@ -1,5 +1,12 @@
 import { toast } from "sonner";
 
+/**
+ * Convert CSV to JSON
+ * @param csvData - CSV data to convert.
+ * @param safeHeaders - Safe headers to convert.
+ * @param mandatoryField - Mandatory field to convert.
+ * @returns Returns the converted JSON.
+ */
 export const convertCSVToJson = <T = Record<string, any>>(
   csvData: string,
   safeHeaders: string[],

@@ -1,8 +1,8 @@
 import { FINGERPRINT_HEADER } from "@/constants/configs";
 import { analyzeCompanyWithMetaPhore } from "@/lib/metaphore";
-import type { OpenAIStreamPayload } from "@/lib/openai/stream";
 import { OpenAIStream } from "@/lib/openai/stream";
 import type { CompanyCSVData } from "@/types/PersonEnrich.type";
+import type { OpenAIStreamPayload } from "@/types/openai.type";
 import { HttpStatusCode } from "axios";
 import { NextResponse } from "next/server";
 
@@ -43,14 +43,6 @@ export async function POST(request: Request) {
   const stream = await OpenAIStream(payload);
   // Create a new response
   const response = new Response(stream);
-
-  // Set CORS headers
-  response.headers.set("Access-Control-Allow-Origin", "*");
-  response.headers.set(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE",
-  );
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type");
 
   // Return the response
   return response;

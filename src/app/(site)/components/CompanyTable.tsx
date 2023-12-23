@@ -1,5 +1,11 @@
-import { DownloadButton } from "@/app/components/DownloadButton";
+"use client";
+
+import { DownloadButton } from "@/app/(site)/components/DownloadButton";
+import { Spinner } from "@/components/Spinner";
 import { TypingEffect } from "@/components/TypingEffect";
+import LinkedInIcon from "@/components/icons/LinkedIn";
+import TwitterIcon from "@/components/icons/Twitter";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,10 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FINGERPRINT_HEADER } from "@/constants/configs";
 import { useEnrichContext } from "@/contexts/enrich-context";
+import {
+  aiAnalyzeForCompanyDomain,
+  enrichCompanyByDomain,
+} from "@/core/company/mutations";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
-import { axios } from "@/lib/axios";
 import type {
   CompanyCSVData,
   CompanyEnrichData,
@@ -23,18 +31,14 @@ import { Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Spinner } from "../Spinner";
-import LinkedInIcon from "../icons/LinkedIn";
-import TwitterIcon from "../icons/Twitter";
-import { Button } from "../ui/button";
+import AIGeneretedContent from "./AIGeneretedContent";
 
 type CompanyTableProps = {
-  rowData: CompanyCSVData[];
   csrfToken: string | null;
 };
 
-export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
-  const { setShowDownloadButton, setDownloadableCompanyData } =
+export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
+  const { setShowDownloadButton, setDownloadableCompanyData, companyCSVData } =
     useEnrichContext();
 
   const [enrichedData, setEnrichedData] = useState<CompanyEnrichData[]>([]);
@@ -81,17 +85,11 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
     async (companyData: CompanyCSVData) => {
       const fp = await getFingerprint();
       try {
-        const { data } = await axios.post<CompanyEnrichData>(
-          "/api/company",
-          companyData,
-          {
-            headers: {
-              "X-CSRF-Token": csrfToken,
-              "x-fingerprint": fp,
-            },
-            timeout: 20000,
-          },
-        );
+        const { data } = await enrichCompanyByDomain({
+          domain: companyData.domain,
+          fingerprint: fp,
+          csrfToken: csrfToken as string,
+        });
         updateEnrichedList(data, true);
       } catch (err) {
         updateEnrichedList(
@@ -105,51 +103,38 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
   );
 
   useEffect(() => {
-    if (rowData) {
+    if (companyCSVData) {
       const batchSize = 5;
       let index = 0;
 
       const processBatch = async () => {
-        const batch = rowData.slice(index, index + batchSize);
+        const batch = companyCSVData.slice(index, index + batchSize);
         await Promise.all(batch.map(getCompanyEnrichedData));
 
         index += batchSize;
-        if (index < rowData.length) {
+        if (index < companyCSVData.length) {
           processBatch();
         }
       };
 
       processBatch();
-      setProcessingDomains(rowData.map(row => row.domain));
-      setEnrichedData(rowData);
+      setProcessingDomains(companyCSVData.map(row => row.domain));
+      setEnrichedData(companyCSVData);
     }
-  }, [getCompanyEnrichedData, rowData]);
+  }, [getCompanyEnrichedData, companyCSVData]);
 
   const aiAnalyze = async (domain: string) => {
     setGeneratedContent("");
     setGenerating(domain);
 
     try {
-      const response = await fetch("/api/ai-analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          [FINGERPRINT_HEADER]: await getFingerprint(),
-        },
-        body: JSON.stringify({ domain }),
-      });
+      const fp = await getFingerprint();
+      const reader = await aiAnalyzeForCompanyDomain(fp, domain);
 
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      // This data is a ReadableStream
-      const data = response.body;
-      if (!data) {
+      if (!reader) {
+        toast.error("Something went wrong");
         return;
       }
-
-      const reader = data.getReader();
 
       const decoder = new TextDecoder();
       let done = false;
@@ -170,37 +155,20 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
     setGenerating(null);
   };
 
+  if (!companyCSVData) return null;
+
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
-      {generatedContent ? (
-        <div>
-          <pre className="text-left text-xs whitespace-pre-wrap">
-            {generatedContent}
-          </pre>
-        </div>
-      ) : null}
-      <div className="w-full flex justify-between items-center mt-8 mb-2 text-zinc-500">
-        <div className="flex items-center gap-1">
-          {isEnriching ? (
-            <div className="flex items-center gap-2">
-              {isEnriching ? <Spinner /> : null}
-              <p className="font-semibold leading-none tracking-tight text-sm">
-                Analysing {rowData.length - dataMissingFor.length} out of{" "}
-                {rowData.length}
-              </p>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 justify-start">
-              <DownloadButton />
-              <Sparkles className="w-4" />
-              <p className="font-semibold leading-none tracking-tight text-sm">
-                Found {enrichedData.length} out of {rowData.length}
-              </p>
-            </div>
-          )}
-        </div>
-        <p className="text-sm text-zinc-600">Scroll right to see more data</p>
-      </div>
+      <AIGeneretedContent
+        content={generatedContent}
+        isGenerating={generating !== null}
+      />
+      <TableTopHeader
+        isEnriching={isEnriching}
+        companyCSVData={companyCSVData}
+        dataMissingLength={dataMissingFor.length}
+        enrichedDataLength={enrichedData.length}
+      />
       <Table className="text-justify overflow-auto w-max">
         <TableHeader>
           <TableRow>
@@ -312,9 +280,14 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
                 />
                 <TableCell className="sticky right-0 bg-white flex justify-center shadow-xl">
                   <Button
-                    variant="default"
+                    variant={
+                      generating && generating !== row.domain
+                        ? "secondary"
+                        : "default"
+                    }
                     size="sm"
                     onClick={() => aiAnalyze(row.domain)}
+                    disabled={generating !== null}
                     className="flex items-center gap-1"
                   >
                     {generating === row.domain ? <Spinner /> : null}
@@ -326,6 +299,43 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
           })}
         </TableBody>
       </Table>
+    </div>
+  );
+};
+
+const TableTopHeader = ({
+  isEnriching,
+  companyCSVData,
+  dataMissingLength,
+  enrichedDataLength,
+}: {
+  isEnriching: boolean;
+  dataMissingLength: number;
+  enrichedDataLength: number;
+  companyCSVData?: CompanyCSVData[];
+}) => {
+  return (
+    <div className="w-full flex justify-between items-center mt-8 mb-2 text-zinc-500">
+      <div className="flex items-center gap-1">
+        {isEnriching && companyCSVData ? (
+          <div className="flex items-center gap-2">
+            {isEnriching ? <Spinner /> : null}
+            <p className="font-semibold leading-none tracking-tight text-sm">
+              Analysing {companyCSVData.length - dataMissingLength} out of{" "}
+              {companyCSVData.length}
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 justify-start">
+            <DownloadButton />
+            <Sparkles className="w-4" />
+            <p className="font-semibold leading-none tracking-tight text-sm">
+              Found {enrichedDataLength} out of {companyCSVData?.length}
+            </p>
+          </div>
+        )}
+      </div>
+      <p className="text-sm text-zinc-600">Scroll right to see more data</p>
     </div>
   );
 };
