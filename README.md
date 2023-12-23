@@ -1,8 +1,15 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Octolane AI
 
-## Getting Started
+Octolane AI is an open-source project that provides a B2B Data Enrichment API powered by LLM. The project is built using Next.js and Prisma, and it uses various other libraries and tools such as Tailwind CSS for styling, Husky for Git hooks, and Prettier for code formatting.
 
-First, run the development server:
+### Getting Started
+
+To get started with the project, you need to run the development server as follows:
+
+Start the local postgres database from docker-compose file:
+`docker-compose up -d`
+
+Start the dev server:
 
 ```bash
 npm run dev
@@ -14,23 +21,18 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+After running the server, you can open [http://localhost:3000](http://localhost:3000) with your browser to see the result. You can start editing the page by modifying app/page.tsx. The page auto-updates as you edit the file.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The project is structured in a way that separates concerns and makes it easy to navigate. Here are some of the key directories and files:
 
-## Learn More
+- **src:** This directory contains the main application code. It includes subdirectories for components, pages, styles, and utilities.
+- **prisma:** This directory contains the Prisma schema and migrations. The schema defines the database structure, and migrations are used to update the database over time.
+- **public:** This directory contains static files that are served by the server. This includes images, fonts, and the site's favicon.
+- **package.json:** This file contains the list of project dependencies and scripts.
+- **.env:** This file contains environment variables.
 
-To learn more about Next.js, take a look at the following resources:
+### Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The project uses environment variables for configuration. These are defined in the `src/constants/configs.ts` file. You need to provide these variables in a `.env` file at the root of the project. The `.env` file is ignored by Git as specified in the `.gitignore` file. Simply copy the `.env.example` file to `.env` and replace with your values.
