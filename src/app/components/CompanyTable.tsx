@@ -177,7 +177,10 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
 
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
-      <AIGeneretedContent content={generatedContent} />
+      <AIGeneretedContent
+        content={generatedContent}
+        isGenerating={generating !== null}
+      />
       <div className="w-full flex justify-between items-center mt-8 mb-2 text-zinc-500">
         <div className="flex items-center gap-1">
           {isEnriching && companyCSVData ? (
