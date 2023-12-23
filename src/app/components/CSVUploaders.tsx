@@ -23,7 +23,6 @@ import { toast } from "sonner";
 export const CSVUploaders = () => {
   const {
     setShowDownloadButton,
-    personCSVData,
     companyCSVData,
     setCompanyCSVData,
     setEnrichmentType,
@@ -86,7 +85,7 @@ export const CSVUploaders = () => {
 
   return (
     <Fragment>
-      {!personCSVData && !companyCSVData ? (
+      {!companyCSVData ? (
         <div className="flex space-x-5 pb-5 justify-center">
           <Card className={cn("w-[380px]")}>
             <input
