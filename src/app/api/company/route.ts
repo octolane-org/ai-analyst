@@ -45,6 +45,8 @@ export async function POST(request: Request) {
         update: companyEnrichedData,
       });
 
+      console.log(company);
+
       const companyForFingerprint = await trx.companyForFingerprint.findFirst({
         where: { fingerprint, companyId: company.id },
       });
