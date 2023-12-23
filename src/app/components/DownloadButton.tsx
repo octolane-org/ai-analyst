@@ -103,10 +103,7 @@ export const DownloadButton = () => {
         headers: { [FINGERPRINT_HEADER]: fp },
       });
 
-      if (
-        data.totalCompanyEnriched + data.totalPersonEnriched >=
-        data.userEnrichmentLimit
-      ) {
+      if (data.totalCompanyEnriched >= data.userEnrichmentLimit) {
         setOpenDialog(true);
         setUserEnrichLimit(data.userEnrichmentLimit);
         return false;

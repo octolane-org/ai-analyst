@@ -29,12 +29,11 @@ import TwitterIcon from "../icons/Twitter";
 import { Button } from "../ui/button";
 
 type CompanyTableProps = {
-  rowData: CompanyCSVData[];
   csrfToken: string | null;
 };
 
-export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
-  const { setShowDownloadButton, setDownloadableCompanyData } =
+export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
+  const { setShowDownloadButton, setDownloadableCompanyData, companyCSVData } =
     useEnrichContext();
 
   const [enrichedData, setEnrichedData] = useState<CompanyEnrichData[]>([]);
@@ -105,25 +104,25 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
   );
 
   useEffect(() => {
-    if (rowData) {
+    if (companyCSVData) {
       const batchSize = 5;
       let index = 0;
 
       const processBatch = async () => {
-        const batch = rowData.slice(index, index + batchSize);
+        const batch = companyCSVData.slice(index, index + batchSize);
         await Promise.all(batch.map(getCompanyEnrichedData));
 
         index += batchSize;
-        if (index < rowData.length) {
+        if (index < companyCSVData.length) {
           processBatch();
         }
       };
 
       processBatch();
-      setProcessingDomains(rowData.map(row => row.domain));
-      setEnrichedData(rowData);
+      setProcessingDomains(companyCSVData.map(row => row.domain));
+      setEnrichedData(companyCSVData);
     }
-  }, [getCompanyEnrichedData, rowData]);
+  }, [getCompanyEnrichedData, companyCSVData]);
 
   const aiAnalyze = async (domain: string) => {
     setGeneratedContent("");
@@ -181,12 +180,12 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
       ) : null}
       <div className="w-full flex justify-between items-center mt-8 mb-2 text-zinc-500">
         <div className="flex items-center gap-1">
-          {isEnriching ? (
+          {isEnriching && companyCSVData ? (
             <div className="flex items-center gap-2">
               {isEnriching ? <Spinner /> : null}
               <p className="font-semibold leading-none tracking-tight text-sm">
-                Analysing {rowData.length - dataMissingFor.length} out of{" "}
-                {rowData.length}
+                Analysing {companyCSVData.length - dataMissingFor.length} out of{" "}
+                {companyCSVData.length}
               </p>
             </div>
           ) : (
@@ -194,7 +193,7 @@ export const CompanyTable = ({ rowData, csrfToken }: CompanyTableProps) => {
               <DownloadButton />
               <Sparkles className="w-4" />
               <p className="font-semibold leading-none tracking-tight text-sm">
-                Found {enrichedData.length} out of {rowData.length}
+                Found {enrichedData.length} out of {companyCSVData?.length}
               </p>
             </div>
           )}

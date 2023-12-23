@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import { EnrichTable } from "@/components/Tables/EnrichTable";
+import { CompanyTable } from "@/components/Tables/CompanyTable";
 import { ENRICHMENT_TYPE } from "@/constants/enrich.constants";
 import { EnrichContextProvider } from "@/contexts/enrich-context";
 import { prisma } from "@/lib/prisma";
@@ -179,7 +179,7 @@ export default async function Home({
                       ? "Work email required!"
                       : "No credit card required. Work email required!"}
                   </span> */}
-                  <EnrichTable csrfToken={csrfToken} />
+                  <CompanyTable csrfToken={csrfToken} />
                   <CSVUploaders />
                 </Fragment>
               )}

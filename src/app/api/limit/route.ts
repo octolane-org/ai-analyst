@@ -33,17 +33,11 @@ export async function GET(request: Request, response: Response) {
       enrichmentLimit = user?.enrichment_limit || 500;
     }
 
-    const [totalPersonEnriched, totalCompanyEnriched] = await Promise.all([
-      prisma.personForFingerprint.count({
-        where: { fingerprint },
-      }),
-      prisma.companyForFingerprint.count({
-        where: { fingerprint },
-      }),
-    ]);
+    const totalCompanyEnriched = await prisma.companyForFingerprint.count({
+      where: { fingerprint },
+    });
 
     const result: APILimitResponse = {
-      totalPersonEnriched,
       totalCompanyEnriched,
       userFingerprint: fingerprint,
       userEnrichmentLimit: enrichmentLimit,
