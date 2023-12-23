@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { CSVUploaders } from "./components/CSVUploaders";
+import CSVUploader from "./components/CSVUploader";
 import { CompanyTable } from "./components/CompanyTable";
 import { DownloadingData } from "./components/DownloadingData";
 
@@ -72,7 +72,7 @@ export default async function Home({
                     No credit card required. Work email required!
                   </p>
                   <CompanyTable csrfToken={csrfToken} />
-                  <CSVUploaders />
+                  <CSVUploader />
                 </Fragment>
               )}
             </div>

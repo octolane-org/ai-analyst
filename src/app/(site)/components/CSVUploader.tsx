@@ -20,7 +20,7 @@ import type { ChangeEvent } from "react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-export const CSVUploaders = () => {
+const CSVUploader = () => {
   const {
     setShowDownloadButton,
     companyCSVData,
@@ -114,3 +114,5 @@ export const CSVUploaders = () => {
     </Fragment>
   );
 };
+
+export default CSVUploader;
