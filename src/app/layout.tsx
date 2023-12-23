@@ -1,7 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import { Toaster } from "@/components/Toaster";
 import { configuration } from "@/constants/configs";
-import { NextAuthProvider } from "@/lib/next-auth";
+import { NextAuthProvider } from "@/lib/next-auth-provider";
 import SentryBrowserWrapper from "@/lib/sentry/sentry-provider";
 import { cn } from "@/utils/common";
 import { Inter } from "next/font/google";
