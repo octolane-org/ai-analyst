@@ -1,6 +1,11 @@
-import { FINGERPRINT_HEADER } from "@/constants/configs";
+import { FINGERPRINT_HEADER, configuration } from "@/constants/configs";
 import { axios } from "@/lib/axios";
-import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
+import { prisma } from "@/lib/prisma";
+import type {
+  CompanyCSVData,
+  CompanyEnrichData,
+} from "@/types/PersonEnrich.type";
+import { getRootDomain } from "@/utils/getRootDomain";
 
 export const enrichCompanyByDomain = async ({
   fingerprint,
@@ -38,4 +43,40 @@ export const aiAnalyzeForCompanyDomain = async (
   });
 
   return body?.getReader();
+};
+
+export const getCompanyEnrichmentFromOctolane = async (domain: string) => {
+  return await axios.post<{
+    data: Omit<CompanyEnrichData, "founded_at">;
+  }>(
+    "https://enrich.octolane.com/v1/company",
+    { domain: getRootDomain(domain) },
+    { headers: { "x-api-key": configuration.octolaneAPIKey } },
+  );
+};
+
+export const saveCompanrEnrichmentDataToDBByFingerprint = async (
+  data: CompanyCSVData,
+  fingerprint: string,
+) => {
+  prisma.$transaction(async trx => {
+    const company = await trx.companyEnrichment.upsert({
+      where: { domain: data.domain },
+      create: data,
+      update: data,
+    });
+
+    const companyForFingerprint = await trx.companyForFingerprint.findFirst({
+      where: { fingerprint, companyId: company.id },
+    });
+
+    if (!companyForFingerprint) {
+      await trx.companyForFingerprint.create({
+        data: {
+          fingerprint,
+          companyId: company.id,
+        },
+      });
+    }
+  });
 };

@@ -1,12 +1,9 @@
-import { configuration } from "@/constants/configs";
-import { axios } from "@/lib/axios";
-import { prisma } from "@/lib/prisma";
+import {
+  getCompanyEnrichmentFromOctolane,
+  saveCompanrEnrichmentDataToDBByFingerprint,
+} from "@/core/company/mutations";
 import { captureApiException } from "@/lib/sentry/sentry-browser";
-import type {
-  CompanyCSVData,
-  CompanyEnrichData,
-} from "@/types/PersonEnrich.type";
-import { getRootDomain } from "@/utils/getRootDomain";
+import type { CompanyCSVData } from "@/types/PersonEnrich.type";
 import { HttpStatusCode, type AxiosError } from "axios";
 import { NextResponse } from "next/server";
 
@@ -27,37 +24,12 @@ export async function POST(request: Request) {
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   try {
-    const { data } = await axios.post<{
-      data: Omit<CompanyEnrichData, "founded_at">;
-    }>(
-      "https://enrich.octolane.com/v1/company",
-      { domain: getRootDomain(companyData.domain) },
-      { headers: { "x-api-key": configuration.octolaneAPIKey } },
-    );
+    const { data } = await getCompanyEnrichmentFromOctolane(companyData.domain);
 
     const companyEnrichedData = data.data;
 
     // store the data in DB with fingerprint
-    prisma.$transaction(async trx => {
-      const company = await trx.companyEnrichment.upsert({
-        where: { domain: companyEnrichedData.domain },
-        create: companyEnrichedData,
-        update: companyEnrichedData,
-      });
-
-      const companyForFingerprint = await trx.companyForFingerprint.findFirst({
-        where: { fingerprint, companyId: company.id },
-      });
-
-      if (!companyForFingerprint) {
-        await trx.companyForFingerprint.create({
-          data: {
-            fingerprint,
-            companyId: company.id,
-          },
-        });
-      }
-    });
+    saveCompanrEnrichmentDataToDBByFingerprint(companyData, fingerprint);
 
     return Response.json(companyEnrichedData);
   } catch (err) {
