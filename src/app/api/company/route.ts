@@ -29,7 +29,10 @@ export async function POST(request: Request) {
     const companyEnrichedData = data.data;
 
     // store the data in DB with fingerprint
-    saveCompanrEnrichmentDataToDBByFingerprint(companyData, fingerprint);
+    saveCompanrEnrichmentDataToDBByFingerprint(
+      companyEnrichedData,
+      fingerprint,
+    );
 
     return Response.json(companyEnrichedData);
   } catch (err) {
