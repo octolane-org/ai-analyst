@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       },
       {
         role: "user",
-        content: `Always write in markdown format. \n Generate a comprehensive business analysis report with as many as citations possible for company **" 
+        content: `Always write in markdown format and make every single titles bold using markdown. \n Generate a comprehensive business analysis report with as many as citations possible for company **" 
         \n${companyData.domain}** Focus on **"${companyData.domain}** 
         covering its founding story, mission, products/services, market positioning, competitive landscape, financial performance, and future outlook. Highlight key milestones, management strategies, customer demographics, and industry trends. Include analytical graphs, executive summaries, and strategic recommendations. Update the content to reflect the latest developments up to the latest. Add necessary citations hyperlink inline using markdown format. Do not provide Note at the end because you are getting up to date information through our system to your prompt and use information:
           \n${JSON.stringify(content)} \n `,
