@@ -2,6 +2,8 @@
 
 Octolane AI is an open-source project that provides a B2B Data Enrichment API powered by LLM. The project is built using Next.js and Prisma, and it uses various other libraries and tools such as Tailwind CSS for styling, Husky for Git hooks, and Prettier for code formatting.
 
+---
+
 ### Getting Started
 
 To get started with the project, you need to run the development server as follows:

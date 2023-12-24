@@ -10,10 +10,12 @@ import {
 } from "@/components/ui/card";
 import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import { SAFE_COMPANY_HEADERS } from "@/constants/enrich.constants";
+import { SAMPLE_CSV_DATA } from "@/constants/sample-csv-data.constant";
 import { useEnrichContext } from "@/contexts/enrich-context";
 import type { CompanyCSVData } from "@/types/PersonEnrich.type";
 import { cn } from "@/utils/common";
 import { convertCSVToJson } from "@/utils/csvToJson";
+import { downloadCSV } from "@/utils/downloadCSV";
 import { useSession } from "next-auth/react";
 import posthog from "posthog-js";
 import type { ChangeEvent } from "react";
@@ -83,6 +85,10 @@ const CSVUploader = () => {
     );
   };
 
+  const downloadSampleCSV = () => {
+    downloadCSV(["domain"], SAMPLE_CSV_DATA, "sample-company-csv.csv");
+  };
+
   return (
     <Fragment>
       {!companyCSVData ? (
@@ -103,10 +109,17 @@ const CSVUploader = () => {
               </CardDescription>
             </CardHeader>
 
-            <CardFooter>
+            <CardFooter className="flex flex-col items-center gap-2">
               <Button className="w-full" onClick={onClick}>
                 Upload CSV
               </Button>
+
+              <p
+                className="text-xs text-muted-foreground cursor-pointer"
+                onClick={downloadSampleCSV}
+              >
+                Download sample CSV
+              </p>
             </CardFooter>
           </Card>
         </div>

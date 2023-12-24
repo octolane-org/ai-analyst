@@ -160,6 +160,7 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
   return (
     <div className="mt-8 max-w-3xl min-h-[500px]">
       <AIGeneretedContent
+        companyData={null}
         content={generatedContent}
         isGenerating={generating !== null}
       />

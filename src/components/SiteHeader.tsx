@@ -35,7 +35,7 @@ const SiteHeader = () => {
 
           <div className="flex-1 flex items-center justify-end gap-3">
             <a
-              href="https://github.com/octolane-org/csv-to-enrich-app"
+              href="https://github.com/octolane-org/ai-analyst"
               target="_blank"
             >
               <GitHubIcon />

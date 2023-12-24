@@ -31,6 +31,7 @@ export const configuration = {
   },
   metaphoreApiKey: process.env.METAPHOR_API_KEY,
   openaiApiKey: process.env.OPENAI_API_KEY,
+  youApiKey: process.env.YOU_API as string,
 };
 
 export const FINGERPRINT_HEADER = "x-fingerprint";
