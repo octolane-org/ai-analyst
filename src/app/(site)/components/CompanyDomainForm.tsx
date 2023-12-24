@@ -1,10 +1,16 @@
 "use client";
 
+import { Spinner } from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { aiAnalyzeForCompanyDomain } from "@/core/company/mutations";
+import { useFingerprint } from "@/hooks/fingerprint.hook";
+import type { AxiosError } from "axios";
 import { Search, Sparkle } from "lucide-react";
-import { useCallback } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+
+import AIGeneretedContent from "./AIGeneretedContent";
 
 type FormValues = {
   domain: string;
@@ -12,11 +18,16 @@ type FormValues = {
 };
 
 const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
+  const [generatedContent, setGeneratedContent] = useState("");
+
+  const { getFingerprint } = useFingerprint();
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    setError,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -38,22 +49,50 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
   });
   const isAnalyzing = watch("isAnalyzing");
 
-  const onSubmit = useCallback(
-    async (formData: FormValues) => {
-      setValue("isAnalyzing", true);
-      setValue("isAnalyzing", false);
-    },
-    [setValue],
-  );
+  const onSubmit = async (formData: FormValues) => {
+    setValue("isAnalyzing", true);
+    setGeneratedContent("");
+
+    try {
+      const fp = await getFingerprint();
+      const reader = await aiAnalyzeForCompanyDomain(fp, formData.domain);
+
+      if (!reader) {
+        setError("domain", {
+          message: "No data found for this domain",
+        });
+        setValue("isAnalyzing", false);
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        const chunkValue = decoder.decode(value);
+        setGeneratedContent(prev => prev + chunkValue);
+      }
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      if (error.response) {
+        setError("domain", {
+          message: error.response.data.error,
+        });
+      }
+    }
+    setValue("isAnalyzing", false);
+  };
 
   return (
     <form
+      className="flex flex-col items-center justify-center my-4"
       onSubmit={handleSubmit(onSubmit)}
-      className="flex items-center justify-center my-4"
     >
-      <div className="flex flex-col items-start">
+      <div className="flex flex-col items-start mb-5">
         <div className="flex items-center">
-          <div className="relative  rounded-md shadow-md mr-2">
+          <div className="relative rounded-md shadow-md mr-2">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <Search className=" text-gray-400 h-4 w-4" />
             </div>
@@ -63,12 +102,17 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
               type="text"
               size={50}
               placeholder="mintlify.com"
+              disabled={isAnalyzing}
               {...domainControl}
             />
           </div>
 
           <Button variant="cta">
-            <Sparkle className="h-4 w-4 mr-1" />
+            {isAnalyzing ? (
+              <Spinner className="mr-1" />
+            ) : (
+              <Sparkle className="h-4 w-4 mr-1" />
+            )}
             {isAnalyzing ? "Analyzing..." : "AI Analyze"}
           </Button>
         </div>
@@ -76,6 +120,10 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
           <p className="text-destructive text-xs">{errors.domain.message}</p>
         )}
       </div>
+      <AIGeneretedContent
+        content={generatedContent}
+        isGenerating={isAnalyzing}
+      />
     </form>
   );
 };
