@@ -2,7 +2,6 @@
 
 import LinkedInIcon from "@/components/icons/LinkedIn";
 import TwitterIcon from "@/components/icons/Twitter";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import { cn, currencyFormat } from "@/utils/common";
@@ -32,12 +31,11 @@ const AIGeneretedContent = ({
   const [textSize, setTextSize] = useState<"text-sm" | "text-md">("text-sm");
 
   if (content.trim().length < 1) return null;
-
-  const copyAiContent = () => {
+  const copyAiContent = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     navigator.clipboard.writeText(content);
     toast.success("AI content copied to clipboard");
   };
-
   return (
     <div className="flex flex-col gap-3 items-end border border-dashed p-2 rounded-lg">
       <div className="w-full flex items-start justify-between border-b border-dashed pb-5">
@@ -142,15 +140,17 @@ const AIGeneretedContent = ({
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <Button
-            size="xs"
-            variant="secondary"
-            disabled={isGenerating}
-            onClick={copyAiContent}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+              copyAiContent(event)
+            }
+            className="cursor-pointer flex items-center justify-center border-2 border-zinc-300 bg-white text-zinc-500 rounded-md px-4 py-1 hover:bg-zinc-900 hover:border-zinc-900 hover:text-white transition-colors duration-200"
           >
-            <Copy className="h-3 w-3 mr-1" />
-            Copy AI Content
-          </Button>
+            <Copy className="h-6 w-4 mr-1" />
+            Copy
+          </div>
         </div>
       </div>
       <ReactMarkdown
