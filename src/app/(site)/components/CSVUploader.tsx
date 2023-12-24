@@ -92,7 +92,7 @@ const CSVUploader = () => {
   return (
     <Fragment>
       {!companyCSVData ? (
-        <div className="flex space-x-5 pb-5 justify-center">
+        <div className="flex space-x-5 pb-5 pt-5 justify-center">
           <Card className={cn("w-[380px]")}>
             <input
               type="file"

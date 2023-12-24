@@ -187,11 +187,12 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
               title="Est. Employee Range"
               isEnriching={isEnriching}
             />
+            <EnrichColumnHeader title="Industry" isEnriching={isEnriching} />
+            <EnrichColumnHeader title="Founded At" isEnriching={isEnriching} />
             <EnrichColumnHeader
               title="Est. Fund Raised"
               isEnriching={isEnriching}
             />
-            <EnrichColumnHeader title="Industry" isEnriching={isEnriching} />
             <EnrichColumnHeader
               title="Primary Location"
               isEnriching={isEnriching}
@@ -200,7 +201,7 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
               title="Est. Annual Revenue"
               isEnriching={isEnriching}
             />
-            <EnrichColumnHeader title="Founded At" isEnriching={isEnriching} />
+
             <TableHead className="sticky right-0 bg-white shadow-lg"></TableHead>
           </TableRow>
         </TableHeader>
@@ -256,15 +257,19 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
+                  data={row.industry}
+                  isProcessing={isProcessing}
+                />
+                <PersonEnrichedCell
+                  data={row.founded_at?.toString()}
+                  isProcessing={isProcessing}
+                />
+                <PersonEnrichedCell
                   data={
                     row.estimated_total_fund_raised
                       ? currencyFormat(row.estimated_total_fund_raised)
                       : ""
                   }
-                  isProcessing={isProcessing}
-                />
-                <PersonEnrichedCell
-                  data={row.industry}
                   isProcessing={isProcessing}
                 />
                 <PersonEnrichedCell
@@ -275,10 +280,7 @@ export const CompanyTable = ({ csrfToken }: CompanyTableProps) => {
                   data={row.estimated_annual_revenue}
                   isProcessing={isProcessing}
                 />
-                <PersonEnrichedCell
-                  data={row.founded_at?.toString()}
-                  isProcessing={isProcessing}
-                />
+
                 <TableCell className="sticky right-0 bg-white flex justify-center shadow-xl">
                   <Button
                     variant={
