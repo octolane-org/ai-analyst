@@ -1,4 +1,4 @@
-import { FINGERPRINT_HEADER } from "@/constants/configs";
+import { FINGERPRINT_HEADER, configuration } from "@/constants/configs";
 import { OpenAIStream } from "@/lib/openai/stream";
 import type { CompanyCSVData } from "@/types/PersonEnrich.type";
 import type { OpenAIStreamPayload } from "@/types/openai.type";
@@ -21,15 +21,10 @@ export async function POST(request: Request) {
 
   // const content = await analyzeCompanyWithMetaPhore(companyData.domain);
 
-  const apiKey = process.env.YOU_API;
-  if (!apiKey) {
-    throw new Error("API key is not defined");
-  }
-
   const options = {
     method: "GET",
     headers: {
-      "X-API-Key": apiKey,
+      "X-API-Key": configuration.youApiKey,
     },
   };
 
