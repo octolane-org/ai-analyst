@@ -11,7 +11,7 @@ import { useFingerprint } from "@/hooks/fingerprint.hook";
 import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import type { AxiosError } from "axios";
 import { Search, Sparkle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import AIGeneretedContent from "./AIGeneretedContent";
@@ -26,7 +26,13 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
   const [companyData, setCompanyData] = useState<CompanyEnrichData | null>(
     null,
   );
-
+  const [shouldSubmit, setShouldSubmit] = useState(false);
+  useEffect(() => {
+    if (shouldSubmit) {
+      handleSubmit(onSubmit)();
+      setShouldSubmit(false);
+    }
+  }, [shouldSubmit]);
   const { getFingerprint } = useFingerprint();
 
   const {
@@ -102,12 +108,35 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
     }
     setValue("isAnalyzing", false);
   };
+  const preDefinedDomains = [
+    "databricks.com",
+    "a16z.com",
+    "airbnb.com",
+    "doordash.com",
+  ];
 
   return (
     <form
-      className="flex flex-col items-center justify-center my-4"
+      className="flex flex-col items-center justify-center mt-20"
       onSubmit={handleSubmit(onSubmit)}
     >
+      {/* <div className="w-full mb-4 flex flex-wrap gap-2 max-w-lg items-center justify-center transition-all duration-500 ease-linear">
+        {preDefinedDomains.map((domain, index) => (
+          <button
+            key={index}
+            className="bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-md cursor-pointer border-solid border-gray-200 text-sm font-sans"
+            onClick={() => {
+              setValue("domain", domain);
+              // Delay form submission until next event loop
+              setTimeout(() => {
+                handleSubmit(onSubmit)();
+              }, 0);
+            }}
+          >
+            {domain}
+          </button>
+        ))}
+      </div> */}
       <div className="flex flex-col items-start mb-5">
         <div className="flex items-center">
           <div className="relative rounded-md shadow-md mr-2">
