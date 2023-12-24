@@ -40,7 +40,7 @@ const SiteHeader = () => {
             >
               <GitHubIcon />
             </a>
-            <a href="https://twitter.com/octolane_app" target="_blank">
+            <a href="https://twitter.com/coffeewithone" target="_blank">
               <TwitterIcon className="h-5 w-5" />
             </a>
 
