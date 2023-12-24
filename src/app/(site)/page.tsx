@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 import { Fragment } from "react";
 
 import CSVUploader from "./components/CSVUploader";
+import CompanyDomainForm from "./components/CompanyDomainForm";
 import { CompanyTable } from "./components/CompanyTable";
 import { DownloadingData } from "./components/DownloadingData";
 
@@ -58,6 +59,7 @@ export default async function Home({
                   <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
                     No credit card required. Work email required!
                   </p>
+                  <CompanyDomainForm csrfToken={csrfToken} />
                   <CompanyTable csrfToken={csrfToken} />
                   <CSVUploader />
                 </Fragment>
