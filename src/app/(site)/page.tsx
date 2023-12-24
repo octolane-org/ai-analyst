@@ -41,7 +41,7 @@ export default async function Home({
           >
             <div className="text-center ">
               <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-500 via-zinc-900 to-zinc-900 pb-4">
-                1-Click AI Case Study for Sales Outreach
+                1-Click AI Analyst
               </h1>
               <p className="text-lg text-zinc-500 mb-2">
                 Upload your file, and with one click and get the enriched data
