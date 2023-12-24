@@ -35,9 +35,9 @@ const AIGeneretedContent = ({
                 : `https://${props.href}`
               : "";
             return (
-              <span className="inline-flex items-center text-blue-400">
+              <span className="inline-flex items-center text-blue-500">
                 <a
-                  className="text-blue-400 font-medium hover:underline"
+                  className="text-blue-500 font-medium hover:underline"
                   {...props}
                   href={href}
                   target="_blank"

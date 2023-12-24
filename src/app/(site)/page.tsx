@@ -6,7 +6,6 @@ import { getCompanyDataByFingerprint } from "@/core/company/queries";
 import type { EnrichmentType } from "@/types/app.type";
 import type { ServerPageProps } from "@/types/common.type";
 import { headers } from "next/headers";
-import Link from "next/link";
 import { Fragment } from "react";
 
 import CSVUploader from "./components/CSVUploader";
@@ -42,24 +41,12 @@ export default async function Home({
           >
             <div className="text-center ">
               <h1 className="font-inter-tight text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-500 via-zinc-900 to-zinc-900 pb-4">
-                1-Click LLM Powered B2B Data Analysis
+                1-Click AI Case Study for Sales Outreach
               </h1>
               <p className="text-lg text-zinc-500 mb-2">
                 Upload your file, and with one click and get the enriched data
                 with detailed analysis
               </p>
-              <div className="mb-3">
-                <p className=" text-xl  font-sans">
-                  Powered by
-                  <Link href="https://metaphor.systems" target="_blank">
-                    {" "}
-                    <span className="text-[#6e44ff] text-lg font-light font-sans">
-                      {" "}
-                      Metaphor AI
-                    </span>
-                  </Link>
-                </p>
-              </div>
 
               {downloadableData && downloadableData?.length > 0 ? (
                 <DownloadingData
