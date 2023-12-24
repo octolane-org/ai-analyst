@@ -3,8 +3,12 @@
 import { Spinner } from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { aiAnalyzeForCompanyDomain } from "@/core/company/mutations";
+import {
+  aiAnalyzeForCompanyDomain,
+  enrichCompanyByDomain,
+} from "@/core/company/mutations";
 import { useFingerprint } from "@/hooks/fingerprint.hook";
+import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import type { AxiosError } from "axios";
 import { Search, Sparkle } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +23,9 @@ type FormValues = {
 
 const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
   const [generatedContent, setGeneratedContent] = useState("");
+  const [companyData, setCompanyData] = useState<CompanyEnrichData | null>(
+    null,
+  );
 
   const { getFingerprint } = useFingerprint();
 
@@ -52,9 +59,20 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
   const onSubmit = async (formData: FormValues) => {
     setValue("isAnalyzing", true);
     setGeneratedContent("");
+    setCompanyData(null);
+
+    const fp = await getFingerprint();
 
     try {
-      const fp = await getFingerprint();
+      const { data } = await enrichCompanyByDomain({
+        domain: formData.domain,
+        fingerprint: fp,
+        csrfToken: csrfToken as string,
+      });
+      setCompanyData(data);
+    } catch (error) {}
+
+    try {
       const reader = await aiAnalyzeForCompanyDomain(fp, formData.domain);
 
       if (!reader) {
@@ -101,13 +119,13 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
               className="disabled:text-gray-900 block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6 "
               type="text"
               size={50}
-              placeholder="mintlify.com"
+              placeholder="databricks.com"
               disabled={isAnalyzing}
               {...domainControl}
             />
           </div>
 
-          <Button variant="cta">
+          <Button variant="cta" disabled={isAnalyzing}>
             {isAnalyzing ? (
               <Spinner className="mr-1" />
             ) : (
@@ -121,6 +139,7 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
         )}
       </div>
       <AIGeneretedContent
+        companyData={companyData}
         content={generatedContent}
         isGenerating={isAnalyzing}
       />
