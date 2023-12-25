@@ -30,14 +30,16 @@ const AIGeneretedContent = ({
 }) => {
   const [textSize, setTextSize] = useState<"text-sm" | "text-md">("text-sm");
 
-  if (content.trim().length < 1) return null;
+  if (content.trim().length < 1 && companyData === null) return null;
+
   const copyAiContent = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     navigator.clipboard.writeText(content);
     toast.success("AI content copied to clipboard");
   };
+
   return (
-    <div className="flex flex-col gap-3 items-end border border-dashed p-2 rounded-lg">
+    <div className="flex flex-col gap-3 border border-dashed p-2 rounded-lg">
       <div className="w-full flex items-start justify-between border-b border-dashed pb-5">
         {companyData ? (
           <div className="flex flex-col items-start gap-3">
@@ -146,6 +148,7 @@ const AIGeneretedContent = ({
             onClick={(event: React.MouseEvent<HTMLDivElement>) =>
               copyAiContent(event)
             }
+            aria-disabled={isGenerating}
             className="cursor-pointer flex items-center justify-center bg-white text-zinc-500 rounded-md px-4 py-1 hover:bg-zinc-900 hover:border-zinc-900 hover:text-white transition-colors duration-200"
           >
             <Copy className="h-6 w-4 mr-1" />
@@ -198,6 +201,16 @@ const AIGeneretedContent = ({
       >
         {content}
       </ReactMarkdown>
+      {content.trim().length < 1 ? (
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              className="h-4 w-full animate-pulse rounded-2xl bg-slate-200"
+              key={index}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

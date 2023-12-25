@@ -7,4 +7,8 @@ export const POSTHOG_EVENTS = {
   REGISTER_TO_DOWNLOAD: "register_to_download",
   DOWNLOAD: "download",
   LIMIT_EXCEEDED: "limit_exceeded",
+  AI_ANALYZE: {
+    SINGLE: "ai_analyze:single",
+    TABLE: "ai_analyze:table",
+  },
 };

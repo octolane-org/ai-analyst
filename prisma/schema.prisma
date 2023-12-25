@@ -80,7 +80,7 @@ model CompanyEnrichment {
   twitter_url                 String?
   twitter_followers           String?
   estimated_annual_revenue    String?
-  estimated_total_fund_raised Int?
+  estimated_total_fund_raised BigInt?
   employee_size_range         String?
   tags                        Json?
   createdAt                   DateTime                @default(now()) @map(name: "created_at")
