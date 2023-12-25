@@ -3,6 +3,7 @@
 import { Spinner } from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { POSTHOG_EVENTS } from "@/constants/analytics.constant";
 import {
   aiAnalyzeForCompanyDomain,
   enrichCompanyByDomain,
@@ -11,6 +12,7 @@ import { useFingerprint } from "@/hooks/fingerprint.hook";
 import type { CompanyEnrichData } from "@/types/PersonEnrich.type";
 import type { AxiosError } from "axios";
 import { Search, Sparkle } from "lucide-react";
+import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -32,6 +34,7 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
       handleSubmit(onSubmit)();
       setShouldSubmit(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldSubmit]);
   const { getFingerprint } = useFingerprint();
 
@@ -77,6 +80,11 @@ const CompanyDomainForm = ({ csrfToken }: { csrfToken: string | null }) => {
       });
       setCompanyData(data);
     } catch (error) {}
+
+    posthog.capture(POSTHOG_EVENTS.AI_ANALYZE.SINGLE, {
+      domain: formData.domain,
+      fingerprint: fp,
+    });
 
     try {
       const reader = await aiAnalyzeForCompanyDomain(fp, formData.domain);
